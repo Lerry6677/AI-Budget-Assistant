@@ -84,3 +84,129 @@ def get_summary(
         "expense_count": expense_count,
         "category_summary": category_summary
     }
+
+def get_month_summary(
+    db: Session,
+    user_id: str,
+    year: int,
+    month: int
+):
+    # 当前月份开始时间
+    start_time = datetime(
+        year,
+        month,
+        1
+    )
+
+    # 下个月开始时间
+    if month == 12:
+        end_time = datetime(
+            year + 1,
+            1,
+            1
+        )
+    else:
+        end_time = datetime(
+            year,
+            month + 1,
+            1
+        )
+
+    # 基础查询：指定用户 + 指定月份
+    base_query = db.query(
+        Expense
+    ).filter(
+        Expense.user_id == user_id,
+        Expense.expense_time >= start_time,
+        Expense.expense_time < end_time
+    )
+
+    # 总消费金额
+    total_amount = db.query(
+        func.sum(Expense.amount)
+    ).filter(
+        Expense.user_id == user_id,
+        Expense.expense_time >= start_time,
+        Expense.expense_time < end_time
+    ).scalar()
+
+    # 消费次数
+    expense_count = db.query(
+        func.count(Expense.id)
+    ).filter(
+        Expense.user_id == user_id,
+        Expense.expense_time >= start_time,
+        Expense.expense_time < end_time
+    ).scalar()
+
+    # 分类统计
+    category_result = db.query(
+        Expense.category,
+        func.sum(Expense.amount)
+    ).filter(
+        Expense.user_id == user_id,
+        Expense.expense_time >= start_time,
+        Expense.expense_time < end_time
+    ).group_by(
+        Expense.category
+    ).all()
+
+    category_summary = {}
+
+    for category, amount in category_result:
+        category_summary[category] = float(amount)
+
+    return {
+        "total_amount": float(total_amount or 0),
+        "expense_count": expense_count or 0,
+        "category_summary": category_summary
+    }
+
+def get_query_summary(
+    db: Session,
+    user_id: str,
+    start_time: datetime,
+    end_time: datetime,
+    category: str | None = None
+):
+    query = db.query(
+        Expense
+    ).filter(
+        Expense.user_id == user_id,
+        Expense.expense_time >= start_time,
+        Expense.expense_time < end_time
+    )
+
+    if category:
+        query = query.filter(
+            Expense.category == category
+        )
+
+    # 总金额
+    total_amount = query.with_entities(
+        func.sum(Expense.amount)
+    ).scalar()
+
+    # 消费笔数
+    expense_count = query.with_entities(
+        func.count(Expense.id)
+    ).scalar()
+
+    # 分类统计
+    category_result = query.with_entities(
+        Expense.category,
+        func.sum(Expense.amount)
+    ).group_by(
+        Expense.category
+    ).all()
+
+    category_summary = {}
+
+    for category_name, amount in category_result:
+        category_summary[category_name] = float(amount)
+
+    return {
+        "total_amount": float(total_amount or 0),
+        "expense_count": expense_count or 0,
+        "category_summary": category_summary
+    }
