@@ -1,0 +1,19 @@
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+
+# Python virtual environments and bytecode
+venv/
+.venv/
+**/__pycache__/
+*.pyc
+
+# Editor settings
+.idea/
+.vscode/
+
+# Local test and runtime artifacts
+.pytest_cache/
+*.log
+*.tmp
