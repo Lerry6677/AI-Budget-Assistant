@@ -1,33 +1,21 @@
-from pydantic import BaseModel
-from typing import List
-from datetime import datetime
-from typing import Optional
+"""Compatibility exports for the former schemas module."""
 
-class ExpenseCreate(BaseModel):
+from schemas import (
+    ChatRequest,
+    ChatResponse,
+    ExpenseBatch,
+    ExpenseCreate,
+    ExpenseResponse,
+    LoginRequest,
+    RegisterRequest,
+    TokenResponse,
+    UserProfileResponse,
+    UserProfileUpdate,
+    UserResponse,
+)
 
-    category: str
-
-    amount: float
-
-    description: str
-
-    expense_time: Optional[datetime] = None
-
-    expense_time_text: str | None = None
-
-
-
-class ExpenseResponse(ExpenseCreate):
-
-    id: int
-
-    user_id: str
-
-    created_at: datetime
-
-
-    class Config:
-        from_attributes = True
-
-class ExpenseBatch(BaseModel):
-    expenses: List[ExpenseCreate]
+__all__ = [
+    "ChatRequest", "ChatResponse", "ExpenseBatch", "ExpenseCreate", "ExpenseResponse",
+    "LoginRequest", "RegisterRequest", "TokenResponse", "UserResponse",
+    "UserProfileResponse", "UserProfileUpdate",
+]
