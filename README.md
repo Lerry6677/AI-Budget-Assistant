@@ -41,7 +41,7 @@ AI：
 计划：
 
 Frontend:
-- Vue
+- UniApp
 
 Backend:
 - Python / FastAPI
