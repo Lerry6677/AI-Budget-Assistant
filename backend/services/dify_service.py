@@ -23,11 +23,14 @@ def chat_with_dify(user_id: str | int, message: str) -> str:
         raise ValueError("message is required")
 
     payload = {
-        "inputs": {"user_id": str(user_id)},
-        "query": message,
-        "response_mode": "blocking",
-        "user": str(user_id),
+    "inputs": {
+        "user_id": str(user_id),
+        "user_input": message,
+    },
+    "response_mode": "blocking",
+    "user": str(user_id),
     }
+
     request = Request(
         DIFY_API_URL,
         data=json.dumps(payload).encode("utf-8"),
@@ -40,13 +43,38 @@ def chat_with_dify(user_id: str | int, message: str) -> str:
 
     try:
         with urlopen(request, timeout=DIFY_TIMEOUT_SECONDS) as response:
-            result = json.loads(response.read().decode("utf-8"))
+            status_code = response.status
+            response_body = response.read().decode("utf-8")
+
+            print(f"[Dify] HTTP {status_code}")
+            print(f"[Dify] Response: {response_body}")
+
+            result = json.loads(response_body)
+
     except HTTPError as error:
-        raise DifyServiceError(f"Dify API request failed with status {error.code}") from error
-    except (URLError, TimeoutError, json.JSONDecodeError) as error:
+        response_body = error.read().decode("utf-8", errors="replace")
+
+        print(f"[Dify] HTTP Error {error.code}")
+        print(f"[Dify] Response: {response_body}")
+
+        raise DifyServiceError(
+            f"Dify API request failed with status {error.code}: {response_body}"
+        ) from error
+
+    except (URLError, TimeoutError) as error:
+        print(f"[Dify] Connection error: {error}")
         raise DifyServiceError("Dify API request failed") from error
 
-    answer = result.get("answer")
+    except json.JSONDecodeError as error:
+        print(f"[Dify] Invalid JSON response: {response_body}")
+        raise DifyServiceError("Dify API returned invalid JSON") from error
+
+    data = result.get("data", {})
+    outputs = data.get("outputs", {})
+    answer = outputs.get("answer")
+
     if not isinstance(answer, str):
+        print(f"[Dify] Missing answer field. Response: {result}")
         raise DifyServiceError("Dify API response did not contain an answer")
+
     return answer

@@ -23,3 +23,17 @@ def get_dify_api_key() -> str:
     if not api_key:
         raise RuntimeError("DIFY_API_KEY environment variable is required")
     return api_key
+
+
+def get_dify_internal_api_key() -> str:
+    api_key = os.getenv("DIFY_INTERNAL_API_KEY")
+    if not api_key:
+        raise RuntimeError("DIFY_INTERNAL_API_KEY environment variable is required")
+    return api_key
+
+
+def get_agent_api_key() -> str:
+    api_key = os.getenv("AGENT_API_KEY")
+    if not api_key:
+        raise RuntimeError("AGENT_API_KEY environment variable is required")
+    return api_key

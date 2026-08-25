@@ -8,7 +8,7 @@ from database import get_db
 from models import User
 from schemas import ExpenseBatch, ExpenseResponse
 from services import expense_service
-from api.dependencies import get_current_user
+from api.dependencies import get_current_user, get_expense_query_user_id
 
 
 router = APIRouter(tags=["expense"])
@@ -62,6 +62,6 @@ def query_expense(
     end_time: datetime,
     category: str | None = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    user_id: str = Depends(get_expense_query_user_id),
 ):
-    return expense_service.get_query_summary(db, str(current_user.id), start_time, end_time, category)
+    return expense_service.get_query_summary(db, user_id, start_time, end_time, category)

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from api import chat_router, expense_router, user_router
+from api import agent_router, chat_router, expense_router, user_router
 from database import Base, engine
 
 
@@ -18,6 +18,7 @@ def root():
     return {"message": "AI Budget Assistant Running"}
 
 
+app.include_router(agent_router)
 app.include_router(expense_router)
 app.include_router(chat_router)
 app.include_router(user_router)

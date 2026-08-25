@@ -117,13 +117,6 @@ def parse_expense_time(text: str | None) -> datetime | None:
             ).date()
 
     # =========================
-    # 没有解析出日期
-    # =========================
-
-    if date is None:
-        return None
-
-    # =========================
     # 5. 判断时间段
     # =========================
 
@@ -152,7 +145,21 @@ def parse_expense_time(text: str | None) -> datetime | None:
         minute = 0
 
     else:
-        # 只有日期，没有具体时间
+        hour = None
+        minute = 0
+
+    # =========================
+    # 没有解析出日期时，如果有时间段则默认为今天，否则返回 None
+    # =========================
+
+    if date is None:
+        if hour is not None:
+            date = now.date()
+        else:
+            return None
+
+    # 有日期但没有时间段，默认中午
+    if hour is None:
         hour = 12
         minute = 0
 

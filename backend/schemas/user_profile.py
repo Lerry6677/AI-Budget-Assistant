@@ -9,6 +9,10 @@ class UserProfileUpdate(BaseModel):
     financial_goal: Optional[str] = None
 
 
+class AgentUserProfileUpdate(UserProfileUpdate):
+    user_id: int | str
+
+
 class UserProfileResponse(BaseModel):
     id: int
     user_id: str

@@ -12,6 +12,15 @@ class ExpenseCreate(BaseModel):
     expense_time_text: str | None = None
 
 
+class AgentExpenseCreate(ExpenseCreate):
+    user_id: int | str
+
+
+class AgentExpenseBatch(BaseModel):
+    user_id: int | str
+    expenses: List[ExpenseCreate]
+
+
 class ExpenseResponse(ExpenseCreate):
     id: int
     user_id: str
