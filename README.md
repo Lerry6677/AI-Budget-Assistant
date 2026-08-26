@@ -94,25 +94,22 @@ AI：
 
 # 系统架构
 
-User
-|
-|
-FastAPI Backend
-|
-|
-Dify Workflow
-|
-+----------------+
-| |
-LLM Memory
-| |
-结构化解析 用户画像管理
-|
-|
-Agent API
-|
-|
-MySQL
+                 User
+                   |
+                   |
+              FastAPI
+                   |
+              JWT Auth
+                   |
+              Dify Workflow
+                   |
+        ---------------------
+        |          |         |
+      LLM       Memory    Tools
+        |          |         |
+   结构化解析   Profile   Agent API
+                              |
+                          MySQL
 
 
 
