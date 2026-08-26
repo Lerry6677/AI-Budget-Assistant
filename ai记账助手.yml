@@ -1,0 +1,1940 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  icon_type: emoji
+  mode: workflow
+  name: ai记账助手
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/tongyi:0.2.13@76feba79a09357673e1ebe24f1ec98123062d3f3198abe08551804def1fcd020
+    version: null
+kind: app
+version: 0.7.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 50
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        knowledge_file_size_limit: 15
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: start
+        targetType: llm
+      id: 1785939530242-source-1787225314838-target
+      selected: false
+      source: '1785939530242'
+      sourceHandle: source
+      target: '1787225314838'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: http-request
+        targetType: code
+      id: 1785941697855-source-1787544567751-target
+      source: '1785941697855'
+      sourceHandle: source
+      target: '1787544567751'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: llm
+        targetType: code
+      id: 1787210902171-source-1787624311288-target
+      source: '1787210902171'
+      sourceHandle: source
+      target: '1787624311288'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: llm
+        targetType: if-else
+      id: 1787225314838-source-1787225607996-target
+      selected: false
+      source: '1787225314838'
+      sourceHandle: source
+      target: '1787225607996'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: if-else
+        targetType: question-classifier
+      id: 1787225607996-91dc8783-d24c-4fe6-aa15-b6bf814e4935-1787280502477-target
+      selected: false
+      source: '1787225607996'
+      sourceHandle: 91dc8783-d24c-4fe6-aa15-b6bf814e4935
+      target: '1787280502477'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: if-else
+        targetType: tool
+      id: 1787225607996-e993333d-7e28-438c-ac6a-688c63c5be9c-1787227925517-target
+      selected: false
+      source: '1787225607996'
+      sourceHandle: e993333d-7e28-438c-ac6a-688c63c5be9c
+      target: '1787227925517'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: if-else
+        targetType: llm
+      id: 1787225607996-true-1787210902171-target
+      selected: false
+      source: '1787225607996'
+      sourceHandle: 'true'
+      target: '1787210902171'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: http-request
+        targetType: http-request
+      id: 1787227055974-source-17872775692380-target
+      selected: false
+      source: '1787227055974'
+      sourceHandle: source
+      target: '17872775692380'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: llm
+        targetType: code
+      id: 1787227345511-source-1787544567751-target
+      source: '1787227345511'
+      sourceHandle: source
+      target: '1787544567751'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: llm
+        targetType: http-request
+      id: 1787227672931-source-1787227055974-target
+      source: '1787227672931'
+      sourceHandle: source
+      target: '1787227055974'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: tool
+        targetType: llm
+      id: 1787227925517-source-1787227672931-target
+      selected: false
+      source: '1787227925517'
+      sourceHandle: source
+      target: '1787227672931'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: http-request
+        targetType: llm
+      id: 17872775692380-source-1787227345511-target
+      selected: false
+      source: '17872775692380'
+      sourceHandle: source
+      target: '1787227345511'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: http-request
+        targetType: code
+      id: 17872776620280-source-1787544567751-target
+      source: '17872776620280'
+      sourceHandle: source
+      target: '1787544567751'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: llm
+        targetType: code
+      id: 1787278335567-source-1787544567751-target
+      source: '1787278335567'
+      sourceHandle: source
+      target: '1787544567751'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: llm
+        targetType: http-request
+      id: 1787279392486-source-17873174867210-target
+      source: '1787279392486'
+      sourceHandle: source
+      target: '17873174867210'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: question-classifier
+        targetType: llm
+      id: 1787280502477-1-1787278335567-target
+      selected: false
+      source: '1787280502477'
+      sourceHandle: '1'
+      target: '1787278335567'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: question-classifier
+        targetType: llm
+      id: 1787280502477-2-1787279392486-target
+      selected: false
+      source: '1787280502477'
+      sourceHandle: '2'
+      target: '1787279392486'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: http-request
+        targetType: llm
+      id: 17873174867210-source-1787317518742-target
+      selected: false
+      source: '17873174867210'
+      sourceHandle: source
+      target: '1787317518742'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: null
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: llm
+        targetType: http-request
+      id: 1787317518742-source-17872776620280-target
+      source: '1787317518742'
+      sourceHandle: source
+      target: '17872776620280'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: code
+        targetType: end
+      id: 1787544567751-source-1787542956419-target
+      source: '1787544567751'
+      sourceHandle: source
+      target: '1787542956419'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        sourceType: code
+        targetType: http-request
+      id: 1787624311288-source-1785941697855-target
+      source: '1787624311288'
+      sourceHandle: source
+      target: '1785941697855'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables:
+        - default: ''
+          hint: ''
+          label: user_input
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: user_input
+        - default: user001
+          hint: ''
+          label: user_id
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: user_id
+      height: 135
+      id: '1785939530242'
+      position:
+        x: 0
+        y: 100.2619047619047
+      positionAbsolute:
+        x: 0
+        y: 100.2619047619047
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        authorization:
+          config:
+            api_key: b7623cfb5fcef2e139d6e1e88a9ea9d53fb0172e164d7d46beef80f54292b9a4
+            header: X-Agent-Key
+            type: custom
+          type: api-key
+        body:
+          data:
+          - id: key-value-284
+            key: ''
+            type: text
+            value: '{{#1787624311288.result#}}'
+          type: json
+        headers: Content-Type:application/json
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 存储请求
+        type: http-request
+        url: http://host.docker.internal:8000/agent/expense
+        variables: []
+      height: 137
+      id: '1785941697855'
+      position:
+        x: 1817.70884247617
+        y: 20.741773319924206
+      positionAbsolute:
+        x: 1817.70884247617
+        y: 20.741773319924206
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params: {}
+          mode: chat
+          name: qwen3.6-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: 7514c518-daca-4f75-b38b-b3a92c540069
+          role: system
+          text: '你不是聊天机器人。
+
+            你是一个JSON生成API。
+
+            任何情况下禁止回复自然语言。
+
+            禁止解释。
+
+            禁止markdown。
+
+            你的输出会直接发送给FastAPI，所以任何额外字符都会导致程序失败。
+
+            你是一个专业记账数据解析器。
+
+            你的唯一任务是把用户输入转换为JSON。
+
+            严格遵守：
+
+            只输出JSON。
+
+            不允许输出任何解释文字。
+
+            不允许输出message字段。
+
+            不允许输出注释。
+
+            不允许使用markdown代码块。
+
+            字段名必须完全一致。
+
+            expenses必须始终是数组。
+
+            用户输入中有多笔消费时，必须分别生成多个expense对象。
+
+            category必须从规定的分类中选择最合适的一项。
+
+            amount必须输出数字，不要带“元”等单位。
+
+            description应该简洁描述消费内容。
+
+            不要自行编造用户没有提供的信息。
+
+            时间处理规则：
+
+            expense_time_text用于保存用户原话中的消费时间表达。
+
+            例如：
+
+            “昨天晚上” → expense_time_text为“昨天晚上”
+
+            “今天中午” → expense_time_text为“今天中午”
+
+            “8月18日” → expense_time_text为“8月18日”
+
+            “上周五” → expense_time_text为“上周五”
+
+            如果用户没有提供消费时间：
+
+            expense_time_text填写null。
+
+            expense_time字段不要进行时间转换。
+
+            无论用户是否提供时间，expense_time都必须填写null。
+
+            不要把“昨天晚上”“今天中午”“上周五”等自然语言直接填写到expense_time。
+
+            时间理解规则补充：
+
+            1. 用户描述中的时间范围具有上下文作用。
+
+            例如：
+
+            用户：
+
+            昨天中午吃饭50，晚上打车30，买奶茶15
+
+            理解为：
+
+            第一笔:
+
+            昨天中午
+
+            第二笔:
+
+            昨天晚上
+
+            第三笔:
+
+            昨天
+
+            不要把没有明确时间的消费设置为空。
+
+            2. 如果一句话前面出现日期，
+
+            后面的消费没有新的日期，
+
+            默认继承前面的日期。
+
+            3. 如果只有时间段，没有日期：
+
+            继承最近一次出现的日期。
+
+            4. expense_time_text字段必须填写完整时间表达，
+
+            不要只填写局部时间。
+
+            错误：
+
+            {
+
+            "expense_time_text":"晚上"
+
+            }
+
+            正确：
+
+            {
+
+            "expense_time_text":"昨天晚上"
+
+            }
+
+            5. 如果完全没有时间信息：
+
+            expense_time_text=null
+
+            expense_time由FastAPI后端程序负责转换为标准datetime格式。
+
+            category必须从以下选择：
+
+            餐饮、交通、购物、娱乐、住房、其他
+
+            输出格式：
+
+            {
+
+            "expenses": [
+
+            {
+
+            "category": "餐饮",
+
+            "amount": 15,
+
+            "description": "午饭",
+
+            "expense_time_text": null,
+
+            "expense_time": null
+
+            }
+
+            ]
+
+            }
+
+            例如：
+
+            用户：
+
+            午饭15元，打车20元
+
+            输出：
+
+            {
+
+            "expenses": [
+
+            {
+
+            "category": "餐饮",
+
+            "amount": 15,
+
+            "description": "午饭",
+
+            "expense_time_text": null,
+
+            "expense_time": null
+
+            },
+
+            {
+
+            "category": "交通",
+
+            "amount": 20,
+
+            "description": "打车",
+
+            "expense_time_text": null,
+
+            "expense_time": null
+
+            }
+
+            ]
+
+            }
+
+            例如：
+
+            用户：
+
+            昨天晚上吃火锅120元
+
+            输出：
+
+            {
+
+            "expenses": [
+
+            {
+
+            "category": "餐饮",
+
+            "amount": 120,
+
+            "description": "火锅",
+
+            "expense_time_text": "昨天晚上",
+
+            "expense_time": null
+
+            }
+
+            ]
+
+            }
+
+            例如：
+
+            用户：
+
+            今天中午吃饭25元，下午打车18元
+
+            输出：
+
+            {
+
+            "expenses": [
+
+            {
+
+            "category": "餐饮",
+
+            "amount": 25,
+
+            "description": "吃饭",
+
+            "expense_time_text": "今天中午",
+
+            "expense_time": null
+
+            },
+
+            {
+
+            "category": "交通",
+
+            "amount": 18,
+
+            "description": "打车",
+
+            "expense_time_text": "下午",
+
+            "expense_time": null
+
+            }
+
+            ]
+
+            }
+
+            再次强调：
+
+            你的整个输出必须从 { 开始，到 } 结束。
+
+            只能输出JSON。
+
+            禁止输出任何JSON之外的内容。'
+        - id: 4dab225b-c8d4-4cf9-9e23-52ec090aedb4
+          role: user
+          text: '{{#1785939530242.user_input#}}'
+        selected: false
+        structured_output:
+          schema:
+            properties:
+              expenses:
+                description: null
+                enum: null
+                items:
+                  properties:
+                    amount:
+                      description: null
+                      enum: null
+                      type: number
+                    category:
+                      description: null
+                      enum: null
+                      type: string
+                    description:
+                      type: string
+                    expense_time:
+                      description: null
+                      enum: null
+                      type:
+                      - string
+                      - 'null'
+                    expense_time_text:
+                      description: null
+                      enum: null
+                      type:
+                      - string
+                      - 'null'
+                  required:
+                  - category
+                  - amount
+                  - description
+                  - expense_time_text
+                  - expense_time
+                  type: object
+                type: array
+            required:
+            - expenses
+            type: object
+        structured_output_enabled: true
+        title: 存储结构化
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1787210902171'
+      position:
+        x: 1079.4177936246915
+        y: 29.073881177852655
+      positionAbsolute:
+        x: 1079.4177936246915
+        y: 29.073881177852655
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen3.6-flash
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: 636777b9-9a2c-48f0-b105-b37bb88cd77a
+          role: system
+          text: "你是 AI Budget Assistant 的一级意图分类器。\n\n你的任务是判断用户当前输入的主要意图。\n\n只能从以下三种意图中选择一种：\n\
+            \n1. record\n用户想新增、记录或保存一笔或多笔消费。\n\n典型表达：\n- 我今天午饭花了15块\n- 昨天打车30元\n-\
+            \ 买咖啡花了25\n- 今天买了衣服200块\n- 午饭15，晚饭30\n- 我刚刚花了50块买水果\n\n2. query\n用户想查询、统计、分析已经存在的财务数据。\n\
+            \n包括但不限于：\n- 查询消费记录\n- 查询某段时间的消费\n- 查询某个类别的消费\n- 查询收入\n- 查询预算\n- 查询消费金额\n\
+            - 查询消费次数\n- 查询消费趋势\n- 询问“花得是否合理”\n- 询问与个人历史财务数据相关的问题\n\n典型表达：\n- 我这个月花了多少钱？\n\
+            - 昨天花了多少钱？\n- 这个月餐饮花了多少？\n- 我最近消费怎么样？\n- 我这个月花钱合理吗？\n- 我这个月还剩多少预算？\n-\
+            \ 我的收入是多少？\n- 我这个月还能花多少钱？\n- 我的消费主要花在哪些地方？\n\n3. chat\n用户不需要新增消费记录，也不需要查询已有财务数据。\n\
+            \n包括：\n- 普通闲聊\n- 一般性的财务知识咨询\n- 一般性的理财问题\n- 用户表达个人想法、计划或目标，但当前没有明确要求查询历史数据\n\
+            - 与记账无直接关系的普通问题\n\n典型表达：\n- 你好\n- 你能做什么？\n- 什么是预算？\n- 怎么才能养成存钱习惯？\n- 我以后想每个月存4000块\n\
+            - 我的目标是买一台电脑\n- 最近压力好大\n- 今天天气不错\n\n重要规则：\n\n1. 如果用户明确要求“记录/新增/记一笔消费”，选择\
+            \ record。\n2. 如果用户要求查询、统计、分析已有财务数据，选择 query。\n3. 如果用户只是聊天、咨询一般知识、表达计划或目标，但没有要求查询已有数据，选择\
+            \ chat。\n4. 不要因为用户提到了“钱”“消费”“存钱”“预算”等词，就自动判断为 query。\n5. 只有用户明确需要使用已有财务数据时，才选择\
+            \ query。\n6. 不要负责判断是否需要更新用户 Memory。Memory 是否需要读取或更新由后续 Agent/工作流决定。\n\
+            7. 如果一句话同时包含多个意图，选择用户当前最主要、最直接的操作意图。\n8. 只能输出结构化分类结果，不要解释，不要输出额外文字。\n\n\
+            输出格式：\n\n{\n  \"intent\": \"record\"\n}\n\n或者：\n\n{\n  \"intent\": \"\
+            query\"\n}\n\n或者：\n\n{\n  \"intent\": \"chat\"\n}"
+        - id: 3e277b37-8d6e-4a89-b463-c8651692b4dc
+          role: user
+          text: '{{#1785939530242.user_input#}}'
+        selected: false
+        structured_output:
+          schema:
+            additionalProperties: false
+            properties:
+              intent:
+                description: 用户的意图。record 表示用户要记录一笔消费，query 表示用户要查询已经记录的消费。
+                enum:
+                - record
+                - query
+                - chat
+                type: string
+            required:
+            - intent
+            type: object
+        structured_output_enabled: true
+        title: 意图识别
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1787225314838'
+      position:
+        x: 342
+        y: 128.9285714285714
+      positionAbsolute:
+        x: 342
+        y: 128.9285714285714
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: d3ff5326-b75a-48c0-874d-0ebea2de246a
+            value: record
+            varType: string
+            variable_selector:
+            - '1787225314838'
+            - structured_output
+            - intent
+          id: 'true'
+          logical_operator: and
+        - case_id: e993333d-7e28-438c-ac6a-688c63c5be9c
+          conditions:
+          - comparison_operator: is
+            id: 4e8a1818-28dd-4ad4-8392-f6f8312450ae
+            value: query
+            varType: string
+            variable_selector:
+            - '1787225314838'
+            - structured_output
+            - intent
+          id: e993333d-7e28-438c-ac6a-688c63c5be9c
+          logical_operator: and
+        - case_id: 91dc8783-d24c-4fe6-aa15-b6bf814e4935
+          conditions:
+          - comparison_operator: is
+            id: 91b033db-a501-4c59-9e27-81bb0a488ed4
+            value: chat
+            varType: string
+            variable_selector:
+            - '1787225314838'
+            - structured_output
+            - intent
+          id: 91dc8783-d24c-4fe6-aa15-b6bf814e4935
+          logical_operator: and
+        selected: false
+        title: 条件分支
+        type: if-else
+      height: 292
+      id: '1787225607996'
+      position:
+        x: 684
+        y: 41.595238095238074
+      positionAbsolute:
+        x: 684
+        y: 41.595238095238074
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        authorization:
+          config:
+            api_key: b7623cfb5fcef2e139d6e1e88a9ea9d53fb0172e164d7d46beef80f54292b9a4
+            header: X-Agent-Key
+            type: custom
+          type: api-key
+        body:
+          data: []
+          type: none
+        headers: ''
+        method: get
+        params: 'user_id:{{#1785939530242.user_id#}}
+
+          start_time:{{#1787227672931.structured_output.start_time#}}
+
+          end_time:{{#1787227672931.structured_output.end_time#}}
+
+          category:{{#1787227672931.structured_output.category#}}'
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 查询请求
+        type: http-request
+        url: http://host.docker.internal:8000/agent/expense/query
+        variables: []
+      height: 137
+      id: '1787227055974'
+      position:
+        x: 1736.0759624772163
+        y: 218.07804377658059
+      positionAbsolute:
+        x: 1736.0759624772163
+        y: 218.07804377658059
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 1
+          mode: chat
+          name: qwen3.6-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: aceec690-bc5c-4927-9423-455564190c71
+          role: system
+          text: '你是一个 AI 记账与个人消费分析助手。
+
+
+            根据用户的问题和数据库查询结果生成最终回答。
+
+
+            要求：
+
+
+            1. 首先直接回答用户的问题。
+
+            2. 必须严格基于查询结果中的真实数据回答。
+
+            3. 可以对查询结果进行适度的消费分析，而不仅仅是机械罗列数据。
+
+            4. 当数据中存在明显的消费结构或趋势时，可以主动指出。
+
+            5. 可以指出消费金额最高的类别、占比明显较高的类别等。
+
+            6. 如果适合，可以给出简单、具体、与数据相关的消费建议。
+
+            7. 不要虚构数据库中不存在的数据。
+
+            8. 不要进行投资、贷款等专业金融建议。
+
+            9. 不要过度分析。如果用户只是简单查询，就保持简洁。
+
+            10. 如果查询结果为空，应明确告诉用户该时间范围内没有相关消费记录。
+
+
+            回答应该自然、简洁，像一个真正的个人记账助手。
+
+
+            例如：
+
+
+            用户问：
+
+            “我这个月花了多少钱？”
+
+
+            不要只回答：
+
+            “本月消费487.5元。”
+
+
+            可以回答：
+
+            “本月共消费487.5元，共10笔。其中餐饮310元，占63.59%，是主要支出类别。整体来看，本月消费主要集中在餐饮。”
+
+
+            但如果用户只是问：
+
+            “昨天交通花了多少钱？”
+
+
+            应该直接回答金额，并在有价值时补充简短分析。'
+        - id: 54d4e980-6fc7-47ca-ab18-cd6777b7a43d
+          role: user
+          text: '用户的问题：
+
+            {{{#1785939530242.user_input#}}
+
+
+            数据库查询结果：
+
+            {{{#1787227055974.body#}}
+
+
+            【用户画像】
+
+            {{{#17872775692380.body#}}
+
+            请结合用户的实际财务数据和用户画像进行回答。
+
+
+            如果用户画像中没有相关信息，不要自行推测。
+
+            如果用户只是询问数据，直接回答数据；
+
+            如果用户询问“是否合理”“怎么样”等分析型问题，则结合用户画像进行适当分析。
+
+
+            使用中文回答。'
+        selected: false
+        title: LLM总结和分析
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1787227345511'
+      position:
+        x: 2406.6521944326882
+        y: 268.35512034293856
+      positionAbsolute:
+        x: 2406.6521944326882
+        y: 268.35512034293856
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params: {}
+          mode: chat
+          name: qwen3.6-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: b80264a0-48d7-4a09-bd9a-28a67c9c6901
+          role: system
+          text: "你是一个记账助手的查询条件解析器。\n\n你的任务是把用户的自然语言查询转换成结构化查询参数。\n\n当前日期：\n{{{#1787227925517.text#}}\n\
+            \n规则：\n\n1. total 表示查询指定时间范围内的全部消费。\n2. category 表示查询指定时间范围内某个消费分类的消费。\n\
+            3. 如果用户没有指定分类，category 必须为 null。\n4. start_time 和 end_time 必须使用 YYYY-MM-DD\
+            \ HH:mm:ss 格式。\n5. end_time 使用“结束时间的下一刻”表示，因此数据库查询使用：\n   expense_time\
+            \ >= start_time\n   expense_time < end_time\n6. “这个月”表示当前月份。\n7. “上个月”表示当前月份之前的完整月份。\n\
+            8. “昨天”表示昨天 00:00:00 到今天 00:00:00。\n9. “今天”表示今天 00:00:00 到明天 00:00:00。\n\
+            10. 不要回答用户问题，只输出结构化结果。\n\n示例：\n\n用户：我这个月花了多少钱？\n\nquery_type: total\n\
+            category: null\n\n用户：上个月花了多少钱？\n\nquery_type: total\ncategory: null\n\n\
+            用户：昨天餐饮花了多少钱？\n\nquery_type: category\ncategory: 餐饮\n\n用户：这个月购物花了多少？\n\
+            \nquery_type: category\ncategory: 购物\n\n特别重要：\n\nend_time 永远是查询范围的“排他结束时间”。\n\
+            \n例如：\n\n“这个月”不能把 end_time 设置为当月最后一天 00:00:00，\n而必须设置为下个月第一天 00:00:00。\n\
+            \n例如当前日期为 2026-08-20：\n\n正确：\nstart_time = 2026-08-01 00:00:00\nend_time\
+            \ = 2026-09-01 00:00:00\n\n错误：\nend_time = 2026-08-31 00:00:00"
+        - id: 5f5dc19c-4bc5-475b-93a6-d5738b90d2c4
+          role: user
+          text: '用户查询：
+
+            {{#1785939530242.user_input#}}'
+        selected: false
+        structured_output:
+          schema:
+            additionalProperties: false
+            properties:
+              category:
+                description: 消费分类。如果查询总消费则为 null，例如餐饮、交通、购物、娱乐。
+                type:
+                - string
+                - 'null'
+              end_time:
+                description: 查询结束时间，格式为 YYYY-MM-DD HH:mm:ss。
+                type: string
+              query_type:
+                description: 查询类型。total 表示查询总消费，category 表示查询某个分类的消费。
+                enum:
+                - total
+                - category
+                type: string
+              start_time:
+                description: 查询开始时间，格式为 YYYY-MM-DD HH:mm:ss。
+                type: string
+            required:
+            - query_type
+            - category
+            - start_time
+            - end_time
+            type: object
+        structured_output_enabled: true
+        title: 查询条件解析 LLM
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1787227672931'
+      position:
+        x: 1349.5189043109613
+        y: 218.07804377658059
+      positionAbsolute:
+        x: 1349.5189043109613
+        y: 218.07804377658059
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        is_team_authorization: true
+        meta: null
+        paramSchemas:
+        - auto_generate: null
+          default: '%Y-%m-%d %H:%M:%S'
+          form: form
+          human_description:
+            en_US: Time format in strftime standard.
+            ja_JP: Time format in strftime standard.
+            pt_BR: Time format in strftime standard.
+            zh_Hans: strftime 标准的时间格式。
+          input_schema: null
+          label:
+            en_US: Format
+            ja_JP: Format
+            pt_BR: Format
+            zh_Hans: 格式
+          llm_description: null
+          max: null
+          min: null
+          multiple: false
+          name: format
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: UTC
+          form: form
+          human_description:
+            en_US: Timezone
+            ja_JP: Timezone
+            pt_BR: Timezone
+            zh_Hans: 时区
+          input_schema: null
+          label:
+            en_US: Timezone
+            ja_JP: Timezone
+            pt_BR: Timezone
+            zh_Hans: 时区
+          llm_description: null
+          max: null
+          min: null
+          multiple: false
+          name: timezone
+          options:
+          - icon: null
+            label:
+              en_US: UTC
+              ja_JP: UTC
+              pt_BR: UTC
+              zh_Hans: UTC
+            value: UTC
+          - icon: null
+            label:
+              en_US: America/New_York
+              ja_JP: America/New_York
+              pt_BR: America/New_York
+              zh_Hans: 美洲/纽约
+            value: America/New_York
+          - icon: null
+            label:
+              en_US: America/Los_Angeles
+              ja_JP: America/Los_Angeles
+              pt_BR: America/Los_Angeles
+              zh_Hans: 美洲/洛杉矶
+            value: America/Los_Angeles
+          - icon: null
+            label:
+              en_US: America/Chicago
+              ja_JP: America/Chicago
+              pt_BR: America/Chicago
+              zh_Hans: 美洲/芝加哥
+            value: America/Chicago
+          - icon: null
+            label:
+              en_US: America/Sao_Paulo
+              ja_JP: America/Sao_Paulo
+              pt_BR: América/São Paulo
+              zh_Hans: 美洲/圣保罗
+            value: America/Sao_Paulo
+          - icon: null
+            label:
+              en_US: Asia/Shanghai
+              ja_JP: Asia/Shanghai
+              pt_BR: Asia/Shanghai
+              zh_Hans: 亚洲/上海
+            value: Asia/Shanghai
+          - icon: null
+            label:
+              en_US: Asia/Ho_Chi_Minh
+              ja_JP: Asia/Ho_Chi_Minh
+              pt_BR: Ásia/Ho Chi Minh
+              zh_Hans: 亚洲/胡志明市
+            value: Asia/Ho_Chi_Minh
+          - icon: null
+            label:
+              en_US: Asia/Tokyo
+              ja_JP: Asia/Tokyo
+              pt_BR: Asia/Tokyo
+              zh_Hans: 亚洲/东京
+            value: Asia/Tokyo
+          - icon: null
+            label:
+              en_US: Asia/Dubai
+              ja_JP: Asia/Dubai
+              pt_BR: Asia/Dubai
+              zh_Hans: 亚洲/迪拜
+            value: Asia/Dubai
+          - icon: null
+            label:
+              en_US: Asia/Kolkata
+              ja_JP: Asia/Kolkata
+              pt_BR: Asia/Kolkata
+              zh_Hans: 亚洲/加尔各答
+            value: Asia/Kolkata
+          - icon: null
+            label:
+              en_US: Asia/Seoul
+              ja_JP: Asia/Seoul
+              pt_BR: Asia/Seoul
+              zh_Hans: 亚洲/首尔
+            value: Asia/Seoul
+          - icon: null
+            label:
+              en_US: Asia/Singapore
+              ja_JP: Asia/Singapore
+              pt_BR: Asia/Singapore
+              zh_Hans: 亚洲/新加坡
+            value: Asia/Singapore
+          - icon: null
+            label:
+              en_US: Europe/London
+              ja_JP: Europe/London
+              pt_BR: Europe/London
+              zh_Hans: 欧洲/伦敦
+            value: Europe/London
+          - icon: null
+            label:
+              en_US: Europe/Berlin
+              ja_JP: Europe/Berlin
+              pt_BR: Europe/Berlin
+              zh_Hans: 欧洲/柏林
+            value: Europe/Berlin
+          - icon: null
+            label:
+              en_US: Europe/Moscow
+              ja_JP: Europe/Moscow
+              pt_BR: Europe/Moscow
+              zh_Hans: 欧洲/莫斯科
+            value: Europe/Moscow
+          - icon: null
+            label:
+              en_US: Australia/Sydney
+              ja_JP: Australia/Sydney
+              pt_BR: Australia/Sydney
+              zh_Hans: 澳大利亚/悉尼
+            value: Australia/Sydney
+          - icon: null
+            label:
+              en_US: Pacific/Auckland
+              ja_JP: Pacific/Auckland
+              pt_BR: Pacific/Auckland
+              zh_Hans: 太平洋/奥克兰
+            value: Pacific/Auckland
+          - icon: null
+            label:
+              en_US: Africa/Cairo
+              ja_JP: Africa/Cairo
+              pt_BR: Africa/Cairo
+              zh_Hans: 非洲/开罗
+            value: Africa/Cairo
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        params:
+          format: ''
+          timezone: ''
+        plugin_id: null
+        plugin_unique_identifier: ''
+        provider_icon: /console/api/workspaces/current/tool-provider/builtin/time/icon
+        provider_icon_dark: null
+        provider_id: time
+        provider_name: time
+        provider_show_name: 时间
+        provider_type: builtin
+        selected: false
+        title: 获取当前时间
+        tool_configurations:
+          format:
+            type: mixed
+            value: '%Y-%m-%d %H:%M:%S'
+          timezone:
+            type: constant
+            value: Asia/Shanghai
+        tool_description: 一个用于获取当前时间的工具。
+        tool_label: 获取当前时间
+        tool_name: current_time
+        tool_node_version: '2'
+        tool_parameters: {}
+        type: tool
+      height: 114
+      id: '1787227925517'
+      position:
+        x: 1046
+        y: 193.16666666666666
+      positionAbsolute:
+        x: 1046
+        y: 193.16666666666666
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        authorization:
+          config:
+            api_key: b7623cfb5fcef2e139d6e1e88a9ea9d53fb0172e164d7d46beef80f54292b9a4
+            header: X-Agent-Key
+            type: custom
+          type: api-key
+        body:
+          data: []
+          type: none
+        desc: ''
+        headers: ''
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        method: get
+        params: user_id:{{#1785939530242.user_id#}}
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 获取用户画像
+        type: http-request
+        url: http://host.docker.internal:8000/agent/profile
+        variables: []
+      height: 137
+      id: '17872775692380'
+      position:
+        x: 2052.759452155481
+        y: 231.04089383782468
+      positionAbsolute:
+        x: 2052.759452155481
+        y: 231.04089383782468
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        authorization:
+          config:
+            api_key: b7623cfb5fcef2e139d6e1e88a9ea9d53fb0172e164d7d46beef80f54292b9a4
+            header: X-Agent-Key
+            type: custom
+          type: api-key
+        body:
+          data:
+          - id: key-value-848
+            key: ''
+            type: text
+            value: "{\n  \"user_id\": {{#1785939530242.user_id#}},\n  \"savings_goal\"\
+              :{{#1787317518742.structured_output.savings_goal#}}\n  \"financial_goal\"\
+              : {{#1787317518742.structured_output.financial_goal#}}\n}"
+          type: json
+        desc: ''
+        headers: ''
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        method: post
+        params: user_id:{{#1785939530242.user_id#}}
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: true
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 更新用户画像
+        type: http-request
+        url: http://host.docker.internal:8000/agent/profile
+        variables: []
+      height: 137
+      id: '17872776620280'
+      position:
+        x: 2513.2862891610616
+        y: 604.9869907211465
+      positionAbsolute:
+        x: 2513.2862891610616
+        y: 604.9869907211465
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen3.5-plus-2026-02-15
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: e9cc6516-e6f1-40c6-9d76-63eb2466280e
+          role: system
+          text: "你是 AI Budget Assistant 的聊天助手。\n\n你的职责是与用户进行自然、友好的财务相关对话。\n\n你可以回答：\n\
+            1. 一般性的财务问题\n2. 关于记账、消费、预算、收入和储蓄的简单问题\n3. 用户关于个人财务目标的交流\n4. 普通闲聊\n\n重要规则：\n\
+            \n1. 不要编造用户的个人财务信息。\n2. 如果当前对话中没有提供相关信息，不要假设用户的收入、预算、消费习惯或财务目标。\n3. 如果用户只是普通聊天，正常回答即可。\n\
+            4. 如果用户明确提供了长期的个人财务信息，例如：\n   - 每月希望存多少钱\n   - 财务目标是什么\n   - 长期消费习惯\n\
+            \   - 长期预算偏好\n   可以识别这些信息，但不要在没有工具的情况下声称已经保存。\n5. 如果用户询问自己的历史财务数据，而当前上下文没有这些数据，不要编造，应说明需要查询相关数据。\n\
+            6. 回答应该简洁、自然，不要过度解释。\n7. 使用中文回答用户。"
+        - id: 059a1d16-41ab-4dfc-b903-affa66e97ae0
+          role: user
+          text: '{{#1785939530242.user_input#}}'
+        selected: false
+        title: Chat Agent
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1787278335567'
+      position:
+        x: 1453.5697185791248
+        y: 435.7439124468388
+      positionAbsolute:
+        x: 1453.5697185791248
+        y: 435.7439124468388
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1785939530242'
+          - user_input
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen3.5-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: ceb60967-05ed-42cf-9df9-95bea49b368e
+          role: system
+          text: "你是 AI Budget Assistant 的用户长期记忆提取器。\n\n你的任务是从用户当前输入中识别是否存在值得长期保存的个人财务信息。\n\
+            \n目前只提取以下两个字段：\n\n1. savings_goal\n用户希望每月或长期存下的金额。\n\n2. financial_goal\n\
+            用户明确表达的长期财务目标。\n\n提取规则：\n\n1. 只有用户明确表达的信息才能提取。\n2. 不要推测用户没有提供的信息。\n3.\
+            \ 如果用户没有提供相关信息，对应字段返回 null。\n4. savings_goal 必须是数字。\n5. financial_goal\
+            \ 使用简洁的中文描述。\n6. 普通闲聊、一般财务知识咨询不需要提取信息。\n7. 如果用户同时提供多个信息，同时提取。\n8. 只输出\
+            \ JSON，不要解释。\n\n输出格式：\n\n{\n  \"savings_goal\": null,\n  \"financial_goal\"\
+            : null\n}\n\n示例：\n\n用户：\n我以后每个月想存4000块，目标是买显卡。\n\n输出：\n{\n  \"savings_goal\"\
+            : 4000,\n  \"financial_goal\": \"存钱买显卡\"\n}\n\n用户：\n我以后每个月想存3000。\n\n\
+            输出：\n{\n  \"savings_goal\": 3000,\n  \"financial_goal\": null\n}\n\n用户：\n\
+            我的目标是存钱买一台电脑。\n\n输出：\n{\n  \"savings_goal\": null,\n  \"financial_goal\"\
+            : \"存钱买一台电脑\"\n}\n\n用户：\n你好，今天心情不错。\n\n输出：\n{\n  \"savings_goal\": null,\n\
+            \  \"financial_goal\": null\n}"
+        - id: fb1bf887-7c99-4c52-a425-a914789c0099
+          role: user
+          text: '{{#1785939530242.user_input#}}'
+        selected: false
+        structured_output:
+          schema:
+            additionalProperties: false
+            properties:
+              financial_goal:
+                description: null
+                enum: null
+                type: string
+              savings_goal:
+                description: null
+                enum: null
+                type: string
+            required: []
+            type: object
+        structured_output_enabled: true
+        title: Memory 提取
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1787279392486'
+      position:
+        x: 1408
+        y: 588.6985696210608
+      positionAbsolute:
+        x: 1408
+        y: 588.6985696210608
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        classes:
+        - id: '1'
+          label: chat
+          name: '普通聊天、一般性问题、一般财务知识咨询，以及不需要长期保存的用户信息。
+
+
+            例如：
+
+            - 你好
+
+            - 什么是预算？
+
+            - 怎么才能养成存钱习惯？
+
+            - 今天心情不错
+
+            - 怎么控制消费？'
+        - id: '2'
+          label: memory
+          name: '用户明确表达了值得长期保存的个人财务信息，包括储蓄计划、长期财务目标、长期预算习惯、长期消费偏好等。
+
+
+            例如：
+
+            - 我以后每个月想存4000块
+
+            - 我的目标是存钱买显卡
+
+            - 我以后每个月最多花1000块吃饭
+
+            - 我每个月发工资后都会先存3000块
+
+            - 我以后想控制餐饮支出'
+        model:
+          completion_params:
+            reasoning_effort: low
+            temperature: 0.7
+            thinking: false
+          mode: chat
+          name: qwen3.6-plus
+          provider: langgenius/tongyi/tongyi
+        query_variable_selector:
+        - '1785939530242'
+        - user_input
+        selected: false
+        title: 问题分类器
+        type: question-classifier
+        vision:
+          enabled: false
+      height: 178
+      id: '1787280502477'
+      position:
+        x: 1046
+        y: 462.7666666666666
+      positionAbsolute:
+        x: 1046
+        y: 462.7666666666666
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        authorization:
+          config:
+            api_key: b7623cfb5fcef2e139d6e1e88a9ea9d53fb0172e164d7d46beef80f54292b9a4
+            header: X-Agent-Key
+            type: custom
+          type: api-key
+        body:
+          data: []
+          type: none
+        desc: ''
+        headers: ''
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        method: get
+        params: user_id:{{#1785939530242.user_id#}}
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: '获取用户画像 '
+        type: http-request
+        url: http://host.docker.internal:8000/agent/profile
+        variables: []
+      height: 137
+      id: '17873174867210'
+      position:
+        x: 1751.2246342612189
+        y: 579.7333333333333
+      positionAbsolute:
+        x: 1751.2246342612189
+        y: 579.7333333333333
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen3.6-flash
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: 2e6ad5be-75b4-4d98-a9ff-8da0207cc7ea
+          role: system
+          text: "你负责合并用户最新信息和已有用户画像。\n\n输入包含：\n\n1. 用户最新信息：\n来自刚刚一次对话提取的内容，代表用户当前意图，优先级最高。\n\
+            \n2. 数据库已有用户画像：\n代表过去保存的信息。\n更新规则：\n\n1. 如果用户表达新的目标、计划、偏好：\n   - 使用新的信息覆盖旧值\n\
+            \n2. 如果用户明确表示增加新的信息：\n   - 在原有信息基础上合并\n\n3. 如果用户只是重复已有信息：\n   - 保持原值不变\n\
+            \n特别规则：\n\nfinancial_goal（财务目标）属于单一目标字段。\n\n例如：\n\n已有：\n{\n \"financial_goal\"\
+            :\"存钱买电脑\"\n}\n\n用户：\n\"我要存钱买盲盒\"\n\n应该更新为：\n\n{\n \"financial_goal\"\
+            :\"存钱买盲盒\"\n}\n\n不要输出：\n\n{\n \"financial_goal\":\"存钱买电脑和盲盒\"\n}\n\n\n\
+            输出要求：\n\n1. 只输出 JSON\n2. 不要输出任何解释文字\n3. 不要使用 Markdown\n4. 只返回更新后的完整用户画像\n\
+            \n\n输出格式：\n\n{\n  \"savings_goal\": number | null,\n  \"financial_goal\"\
+            : string | null\n}"
+        - id: 4bfb6fc1-97f3-45ce-b086-1a0d185226a0
+          role: user
+          text: '用户最新信息:{{#1787279392486.structured_output#}}
+
+            数据库已有用户画像:{{#17873174867210.body#}}'
+        selected: false
+        structured_output:
+          schema:
+            properties:
+              financial_goal:
+                description: null
+                enum: null
+                type:
+                - string
+                - 'null'
+              savings_goal:
+                description: null
+                enum: null
+                type:
+                - number
+                - 'null'
+            required:
+            - financial_goal
+            type: object
+        structured_output_enabled: true
+        title: Memory合并
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1787317518742'
+      position:
+        x: 2112.8187824407178
+        y: 604.9869907211465
+      positionAbsolute:
+        x: 2112.8187824407178
+        y: 604.9869907211465
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        outputs:
+        - value_selector:
+          - '1787544567751'
+          - result
+          value_type: string
+          variable: answer
+        selected: false
+        title: 输出
+        type: end
+      height: 88
+      id: '1787542956419'
+      position:
+        x: 4130.950935161527
+        y: 323.3704626348075
+      positionAbsolute:
+        x: 4130.950935161527
+        y: 323.3704626348075
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        code: "import json\n\n\ndef is_empty(value):\n    \"\"\"判断变量是否为空。\"\"\"\n\
+          \    if value is None:\n        return True\n\n    if isinstance(value,\
+          \ str):\n        return not value.strip()\n\n    if isinstance(value, (dict,\
+          \ list)):\n        return len(value) == 0\n\n    return False\n\n\ndef to_dict(value):\n\
+          \    \"\"\"尽可能把结果转换成 dict，方便读取。\"\"\"\n    if isinstance(value, dict):\n\
+          \        return value\n\n    if isinstance(value, str):\n        text =\
+          \ value.strip()\n        if not text:\n            return {}\n\n       \
+          \ try:\n            parsed = json.loads(text)\n            if isinstance(parsed,\
+          \ dict):\n                return parsed\n        except Exception:\n   \
+          \         pass\n\n    return {}\n\n\ndef result_to_text(value):\n    \"\"\
+          \"把结果转换成适合展示给用户的文本。\"\"\"\n    if value is None:\n        return \"\"\n\n\
+          \    if isinstance(value, str):\n        return value.strip()\n\n    if\
+          \ isinstance(value, (dict, list)):\n        return json.dumps(value, ensure_ascii=False)\n\
+          \n    return str(value)\n\n\ndef main(\n    intent,\n    record_result=None,\n\
+          \    query_result=None,\n    chat_result=None,\n    mmr_result=None\n):\n\
+          \    intent = (intent or \"\").strip().lower()\n\n    # =========================\n\
+          \    # 1. 记账\n    # =========================\n    if intent == \"record\"\
+          :\n        record = to_dict(record_result)\n\n        # 尝试判断成功状态\n     \
+          \   success = record.get(\"success\")\n\n        if success is None:\n \
+          \           status = str(record.get(\"status\", \"\")).lower()\n       \
+          \     success = status in [\"success\", \"succeeded\", \"ok\"]\n\n     \
+          \   # 明确失败\n        if success is False:\n            reason = (\n     \
+          \           record.get(\"message\")\n                or record.get(\"error\"\
+          )\n                or record.get(\"detail\")\n                or \"未知原因\"\
+          \n            )\n\n            return {\n                \"result\": f\"\
+          记账失败：{result_to_text(reason)}\"\n            }\n\n        # 明确成功\n     \
+          \   if success is True:\n            detail = (\n                record.get(\"\
+          message\")\n                or record.get(\"description\")\n           \
+          \     or result_to_text(record_result)\n            )\n\n            return\
+          \ {\n                \"result\": f\"已记录，{result_to_text(detail)}\"\n   \
+          \         }\n\n        # 如果没有明确 success 字段，\n        # 但存在业务结果，则尽量按照结果返回\n\
+          \        if not is_empty(record_result):\n            return {\n       \
+          \         \"result\": f\"已记录，{result_to_text(record_result)}\"\n       \
+          \     }\n\n        return {\n            \"result\": \"记账失败：没有获取到有效的记账结果。\"\
+          \n        }\n\n    # =========================\n    # 2. 查询\n    # =========================\n\
+          \    if intent == \"query\":\n        if is_empty(query_result):\n     \
+          \       return {\n                \"result\": \"暂时没有获取到相关账单信息。\"\n     \
+          \       }\n\n        return {\n            \"result\": result_to_text(query_result)\n\
+          \        }\n\n    # =========================\n    # 3. 普通聊天\n    # =========================\n\
+          \    if intent == \"chat\":\n        chat_text = result_to_text(chat_result)\n\
+          \n        # 没有用户画像更新\n        if is_empty(mmr_result):\n            return\
+          \ {\n                \"result\": chat_text\n            }\n\n        # 有用户画像更新\n\
+          \        mmr_text = result_to_text(mmr_result)\n\n        return {\n   \
+          \         \"result\": f\"{chat_text}\\n\\n另外，{mmr_text}\"\n        }\n\n\
+          \    # =========================\n    # 4. 未知 intent\n    # =========================\n\
+          \    return {\n        \"result\": \"\"\n    }\n"
+        code_language: python3
+        isInIteration: false
+        isInLoop: false
+        iteration_id: null
+        loop_id: null
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 代码执行
+        type: code
+        variables:
+        - value_selector:
+          - '1787225314838'
+          - structured_output
+          - intent
+          value_type: object
+          variable: intent
+        - value_selector:
+          - '1785941697855'
+          - body
+          value_type: string
+          variable: record_result
+        - value_selector:
+          - '1787227345511'
+          - text
+          value_type: string
+          variable: query_result
+        - value_selector:
+          - '1787278335567'
+          - text
+          value_type: string
+          variable: chat_result
+        - value_selector:
+          - '17872776620280'
+          - body
+          value_type: string
+          variable: mmr_result
+      height: 52
+      id: '1787544567751'
+      position:
+        x: 3509.1781263384432
+        y: 323.3704626348075
+      positionAbsolute:
+        x: 3509.1781263384432
+        y: 323.3704626348075
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        code: "def main(user_id, expenses):\n    return {\n        \"result\": {\n\
+          \            \"user_id\": user_id,\n            \"expenses\": expenses\n\
+          \        }\n    }"
+        code_language: python3
+        outputs:
+          result:
+            children: null
+            type: object
+        selected: false
+        title: 拼接userid和expenses
+        type: code
+        variables:
+        - value_selector:
+          - '1785939530242'
+          - user_id
+          value_type: string
+          variable: user_id
+        - value_selector:
+          - '1787210902171'
+          - structured_output
+          - expenses
+          value_type: object
+          variable: expenses
+      height: 52
+      id: '1787624311288'
+      position:
+        x: 1500.4936154573898
+        y: 20.741773319924206
+      positionAbsolute:
+        x: 1500.4936154573898
+        y: 20.741773319924206
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    viewport:
+      x: -2161.299254506472
+      y: -379.8937000545093
+      zoom: 1.1519449410199418
+  rag_pipeline_variables: []
