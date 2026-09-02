@@ -4,7 +4,7 @@ import json
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from config import DIFY_API_URL, DIFY_TIMEOUT_SECONDS, get_dify_api_key
+from backend.config import DIFY_API_URL, DIFY_TIMEOUT_SECONDS, get_dify_api_key
 
 
 class DifyServiceError(RuntimeError):

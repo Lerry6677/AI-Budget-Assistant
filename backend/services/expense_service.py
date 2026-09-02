@@ -3,9 +3,9 @@ from datetime import datetime
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from models import Expense, UserProfile
-from schemas import ExpenseCreate, UserProfileUpdate
-from utils import parse_expense_time
+from backend.models import Expense, UserProfile
+from backend.schemas import ExpenseCreate, ExpenseUpdate, UserProfileUpdate
+from backend.utils import parse_expense_time
 
 
 def create_expense(db: Session, expense: ExpenseCreate, user_id: str):
@@ -34,6 +34,42 @@ def delete_expense(db: Session, expense_id: int, user_id: str):
     db.delete(expense)
     db.commit()
     return True
+
+
+def update_expense(db: Session, expense_id: int, user_id: str, update: ExpenseUpdate):
+    expense = db.query(Expense).filter(Expense.id == expense_id, Expense.user_id == user_id).first()
+    if expense is None:
+        return None
+
+    update_data = update.model_dump(exclude_unset=True)
+    if "expense_time" not in update_data and update_data.get("expense_time_text"):
+        update_data["expense_time"] = parse_expense_time(update_data["expense_time_text"])
+
+    for field, value in update_data.items():
+        setattr(expense, field, value)
+
+    db.commit()
+    db.refresh(expense)
+    return expense
+
+
+def get_expenses_in_range(
+    db: Session,
+    user_id: str,
+    start_time: datetime,
+    end_time: datetime,
+    category: str | None = None,
+    limit: int = 50,
+):
+    query = db.query(Expense).filter(
+        Expense.user_id == user_id,
+        Expense.expense_time >= start_time,
+        Expense.expense_time < end_time,
+    )
+    if category:
+        query = query.filter(Expense.category == category)
+
+    return query.order_by(Expense.expense_time.desc(), Expense.id.desc()).limit(limit).all()
 
 
 def get_summary(db: Session, user_id: str):

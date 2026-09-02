@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, DateTime, Float, Integer, String
 
-from database import Base
+from backend.database import Base
 
 
 class Expense(Base):

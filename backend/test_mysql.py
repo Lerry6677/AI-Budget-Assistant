@@ -1,4 +1,4 @@
-from app.database import engine
+from backend.app.database import engine
 
 
 try:

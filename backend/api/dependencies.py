@@ -4,9 +4,9 @@ from fastapi import Depends, Header, HTTPException, Query, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
-from config import get_agent_api_key, get_dify_internal_api_key
-from database import get_db
-from services import auth_service
+from backend.config import get_agent_api_key, get_dify_internal_api_key
+from backend.database import get_db
+from backend.services import auth_service
 
 
 bearer_scheme = HTTPBearer(auto_error=False)

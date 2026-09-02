@@ -1,6 +1,6 @@
 from sqlalchemy import BigInteger, Column, DECIMAL, DateTime, String, func
 
-from database import Base
+from backend.database import Base
 
 
 class UserProfile(Base):

@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from api.dependencies import get_current_user
-from database import get_db
-from models import User
-from schemas import LoginRequest, RegisterRequest, TokenResponse, UserProfileResponse, UserProfileUpdate, UserResponse
-from services import auth_service, expense_service
+from backend.api.dependencies import get_current_user
+from backend.database import get_db
+from backend.models import User
+from backend.schemas import LoginRequest, RegisterRequest, TokenResponse, UserProfileResponse, UserProfileUpdate, UserResponse
+from backend.services import auth_service, expense_service
 
 
 router = APIRouter(tags=["user"])

@@ -1,6 +1,6 @@
 """Compatibility exports for the former CRUD module."""
 
-from services.expense_service import (
+from backend.services.expense_service import (
     create_expense,
     delete_expense,
     get_expenses,

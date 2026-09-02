@@ -1,8 +1,34 @@
+# Web framework
 fastapi
 uvicorn
+
+# Database
 sqlalchemy
 pymysql
 python-dotenv
+
+# Data validation
 pydantic
+
+# Auth
 pwdlib[argon2]
 PyJWT
+
+# ============================================================================
+# LLM / Agent (LangChain 化)
+# ----------------------------------------------------------------------------
+# - langchain-core     : Runnable / Tool / Message 等基础抽象
+# - langchain-community: 第三方集成（DashScope / OpenAI / DeepSeek 等）
+# - langgraph          : Agent 状态图（ReAct / 工具循环 / Checkpointer）
+# ============================================================================
+langchain
+langchain-core
+langchain-community
+langgraph
+
+# 中文友好的可选 LLM 客户端（阿里云百炼 / 通义千问）
+dashscope
+
+# testing
+pytest
+httpx

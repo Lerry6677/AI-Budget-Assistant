@@ -4,11 +4,11 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from database import get_db
-from models import User
-from schemas import ExpenseBatch, ExpenseResponse
-from services import expense_service
-from api.dependencies import get_current_user, get_expense_query_user_id
+from backend.database import get_db
+from backend.models import User
+from backend.schemas import ExpenseBatch, ExpenseResponse
+from backend.services import expense_service
+from backend.api.dependencies import get_current_user, get_expense_query_user_id
 
 
 router = APIRouter(tags=["expense"])

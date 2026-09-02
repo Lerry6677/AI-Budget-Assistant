@@ -4,8 +4,8 @@ import jwt
 from pwdlib import PasswordHash
 from sqlalchemy.orm import Session
 
-from config import JWT_ALGORITHM, JWT_EXPIRE_MINUTES, get_jwt_secret_key
-from models import User
+from backend.config import JWT_ALGORITHM, JWT_EXPIRE_MINUTES, get_jwt_secret_key
+from backend.models import User
 
 
 password_hash = PasswordHash.recommended()

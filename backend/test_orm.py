@@ -1,4 +1,4 @@
-from app.models import Expense
+from backend.app.models import Expense
 
 
 print(

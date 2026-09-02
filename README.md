@@ -1,277 +1,153 @@
 # AI Budget Assistant
 
-一个基于大语言模型（LLM）的聊天式智能记账助手。
+一个基于大语言模型的聊天式智能记账助手。
 
-用户可以通过自然语言描述消费行为，
-AI 自动完成消费信息提取、账单记录、消费查询以及个人财务目标管理。
+传统记账工具需要用户主动填写账单，
+导致记录成本高、坚持困难。
 
-例如：
-
-用户：
-
-> 昨天晚上打车30元，午饭50元
-
-AI：
-
-> 已记录：
->
-> 餐饮 - 50元
->
-> 交通 - 30元
-
-
----
-
-# 项目介绍
-
-传统记账工具通常需要用户主动填写账单，
-记录成本较高，导致用户难以长期坚持。
-
-本项目通过 LLM 理解用户自然语言输入，
-结合 Workflow 编排和后端服务，
-实现类似聊天助手的智能记账体验。
-
-
----
-
-# 核心功能
-
-## AI自然语言记账
-
-支持：
-
-> 昨天晚上打车30元，吃饭50元
-
-
-自动解析：
-
-- 消费类别
-- 消费金额
-- 消费描述
-- 消费时间
-
-
-支持：
-
-- 单笔消费记录
-- 一次输入多笔消费
-
-
----
-
-## 消费查询与分析
-
-支持：
-
-- 查询历史消费记录
-- 按时间范围查询
-- 消费统计
-- 分类消费分析
-
-
----
-
-## 用户长期画像 Memory
-
-支持保存用户长期财务信息：
-
-- 存款目标
-- 财务目标
-
+本项目希望通过自然语言交互，
+让用户像聊天一样完成记账、预算管理和消费分析。
 
 例如：
 
-用户：
-
-> 我要存钱买电脑
-
-
-系统记录用户长期目标，
-后续对话可以继续使用。
-
-
----
-
-# 系统架构
-
-                 User
-                   |
-                   |
-              FastAPI
-                   |
-              JWT Auth
-                   |
-              Dify Workflow
-                   |
-        ---------------------
-        |          |         |
-      LLM       Memory    Tools
-        |          |         |
-   结构化解析   Profile   Agent API
-                             |
-                          MySQL
-
-
+> 用户：今天早餐花了8块，公交4块
+>
+> AI：已记录：
+> - 早餐 - 8元
+> - 交通 - 4元
+>
+> 今日消费 12 元。
 
 ---
 
-# Workflow设计
+## 核心功能
 
+### MVP
 
-当前版本采用 Dify Workflow 编排：
-
-
-
-用户输入
-
-↓
-
-意图识别
-
-↓
-
-LLM结构化解析
-
-↓
-
-调用 Backend Agent API
-
-↓
-
-MySQL数据存储
-
-↓
-
-生成回复
-
-
-
-Memory流程：
-
-
-
-用户信息提取
-
-↓
-
-查询已有用户画像
-
-↓
-
-LLM合并更新
-
-↓
-
-保存用户画像
-
-
+- 自然语言记账
+- 自动分类消费
+- 月度预算管理
+- 消费分析
+- AI 财务建议
 
 ---
 
-# Tech Stack
+## 技术方案
 
-
-## Backend
-
-- FastAPI
-- SQLAlchemy
-- MySQL
-- JWT Authentication
-
-
-## AI
-
-- Dify Workflow
-- Qwen LLM
-- Prompt Engineering
-- Structured Output
-
-
-## Deployment
-
-- Docker
-
+| 层 | 技术 |
+| --- | --- |
+| Backend | Python / FastAPI |
+| ORM | SQLAlchemy + PyMySQL |
+| Database | MySQL |
+| AI（当前） | Dify Workflow / Agent |
+| AI（新）  | **LangChain + LangGraph（内嵌到 FastAPI）** |
 
 ---
 
-# API设计
+## 项目结构
 
-
-## Agent API
-
-
-### 消费记录
-
-
-POST /agent/expense
-
-
-用于 AI 写入用户消费记录。
-
-
-### 消费查询
-
-
-GET /agent/expense/query
-
-
-用于 AI 查询用户历史消费。
-
-
-### 用户画像
-
-
-GET /agent/profile
-
-POST /agent/profile
-
-
-用于管理用户长期财务目标。
-
+```
+backend/
+├── api/                # FastAPI 路由
+│   ├── chat.py         # /chat：根据 AGENT_ENABLED 切换 Agent / Dify
+│   ├── agent.py        # 给 Agent 回调的纯数据接口
+│   ├── expense.py      # 普通用户账单 CRUD
+│   ├── user.py
+│   └── dependencies.py
+├── agent/              # ★ LangChain / LangGraph 编排层
+│   ├── llm.py          # LLM 工厂（OpenAI / DashScope / DeepSeek）
+│   ├── prompts.py      # System Prompt 与消息模板
+│   ├── tools.py        # @tool 工具集（save / query / analyze / profile）
+│   ├── state.py        # Agent Graph 状态定义
+│   ├── checkpointer.py # 会话记忆（默认内存，可切 SQLite / MySQL）
+│   └── graph.py        # 装配：create_react_agent
+├── services/           # 业务逻辑层
+│   ├── expense_service.py
+│   ├── auth_service.py
+│   └── dify_service.py # 旧实现，AGENT_ENABLED=false 时回退
+├── models/             # SQLAlchemy ORM
+├── schemas/            # Pydantic
+├── database/           # 连接 / Session / Base
+├── utils/
+├── config.py           # 统一读取环境变量
+└── main.py             # FastAPI 入口
+```
 
 ---
 
-# 项目状态
+## 架构演进
 
-当前版本：
+### 旧：Dify 外包大脑
 
-## Workflow MVP v1.0
+```
+用户 → FastAPI /chat → Dify Workflow → LLM
+                                ↓
+                         HTTP Tool（FastAPI /agent/*）
+                                ↓
+                              MySQL
+```
 
+### 新：LangGraph 内嵌大脑（当前目标）
 
-已完成：
+```
+用户 → FastAPI /chat → LangGraph Agent → LLM
+                              ├── tools（save/query/analyze/profile）→ 业务 service
+                              └── checkpointer（按 user_id 隔离会话）
+                                                ↓
+                                             MySQL
+```
 
-- [x] 用户认证系统
-- [x] FastAPI 后端
-- [x] Dify Workflow 接入
-- [x] 用户身份传递
-- [x] LLM消费信息结构化解析
-- [x] 多笔消费记录
-- [x] 消费时间解析
-- [x] 消费数据存储
-- [x] 消费查询接口
-- [x] 用户长期画像 Memory
+通过 `AGENT_ENABLED` 切换：
 
+- `AGENT_ENABLED=true`  → 走 LangGraph Agent
+- `AGENT_ENABLED=false` → 继续走 Dify（兼容，便于回退）
 
 ---
 
-# Roadmap
+## 快速开始
 
+1. 复制环境变量模板
 
-## Agent 化升级
+   ```bash
+   cp .env.example .env
+   ```
 
-- [ ] Workflow 转 Agent
-- [ ] Tool Calling
-- [ ] Agent自主选择工具
+2. 编辑 `.env`，至少填好：
 
+   - `DATABASE_URL`
+   - `JWT_SECRET_KEY`
+   - `LLM_API_KEY`（当 `AGENT_ENABLED=true`）
 
-## Memory优化
+3. 安装依赖
 
-- [ ] 多财务目标支持
-- [ ] 更智能的用户画像更新策略
+   ```bash
+   cd backend
+   python -m venv venv
+   venv\Scripts\activate     # Windows
+   pip install -r requirements.txt
+   ```
 
+4. 启动
 
-## 应用层
+   ```bash
+   uvicorn main:app --reload
+   ```
 
-- [ ] UniApp移动端
-- [ ] 数据可视化
-- [ ] Docker完整部署
+5. 打开 [http://localhost:8000/docs](http://localhost:8000/docs) 查看 API。
+
+---
+
+## 当前状态
+
+🚧 LangChain 化重构中
+
+- ✅ 项目骨架与配置切换
+- ✅ `agent/` 目录骨架（`llm.py` / `prompts.py` / `tools.py` / `state.py` / `checkpointer.py` / `graph.py`）
+- ✅ `/chat` 双路径入口
+- ⏳ 工具实现 & 端到端联调（每个文件都已留 TODO）
+
+---
+
+## 开发路线
+
+参考 `docs/PRD.md` 和 `docs/Development_Task_List.md`。

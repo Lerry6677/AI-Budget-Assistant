@@ -3,10 +3,17 @@ from datetime import date, datetime, time, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from api.dependencies import verify_agent_key
-from database import get_db
-from schemas import AgentExpenseBatch, AgentUserProfileUpdate, ExpenseResponse, UserProfileUpdate
-from services import expense_service
+from backend.api.dependencies import verify_agent_key
+from backend.database import get_db
+from backend.schemas import (
+    AgentExpenseBatch,
+    AgentExpenseUpdate,
+    AgentUserProfileUpdate,
+    ExpenseResponse,
+    ExpenseUpdate,
+    UserProfileUpdate,
+)
+from backend.services import expense_service
 
 
 router = APIRouter(tags=["agent"])
@@ -63,7 +70,65 @@ def query_agent_expense(
     db: Session = Depends(get_db),
 ):
     start_time, end_time = _get_agent_query_time_range(start_date, end_date)
-    return expense_service.get_query_summary(db, user_id, start_time, end_time, category)
+    summary = expense_service.get_query_summary(db, user_id, start_time, end_time, category)
+    details = expense_service.get_expenses_in_range(db, user_id, start_time, end_time, category)
+    return {
+        **summary,
+        "details": [ExpenseResponse.model_validate(item) for item in details],
+    }
+
+
+@router.get("/agent/expense/analyze", dependencies=[Depends(verify_agent_key)])
+def analyze_agent_expense(
+    user_id: str = Query(...),
+    start_date: date | None = Query(default=None),
+    end_date: date | None = Query(default=None),
+    category: str | None = Query(default=None),
+    db: Session = Depends(get_db),
+):
+    """Return combined summary, details and user profile for agent-side analysis."""
+    start_time, end_time = _get_agent_query_time_range(start_date, end_date)
+    query_summary = expense_service.get_query_summary(db, user_id, start_time, end_time, category)
+    details = expense_service.get_expenses_in_range(db, user_id, start_time, end_time, category)
+    profile = expense_service.get_user_profile(db, user_id)
+    return {
+        "user_id": user_id,
+        "start_time": start_time,
+        "end_time": end_time,
+        "query_summary": query_summary,
+        "details": [ExpenseResponse.model_validate(item) for item in details],
+        "profile": {
+            "savings_goal": float(profile.savings_goal) if profile and profile.savings_goal is not None else None,
+            "financial_goal": profile.financial_goal if profile else None,
+        },
+    }
+
+
+@router.put("/agent/expense/{expense_id}", dependencies=[Depends(verify_agent_key)])
+def update_agent_expense(
+    expense_id: int,
+    data: AgentExpenseUpdate,
+    db: Session = Depends(get_db),
+):
+    user_id = str(data.user_id)
+    update_data = ExpenseUpdate(**data.model_dump(exclude={"user_id"}, exclude_unset=True))
+    expense = expense_service.update_expense(db, expense_id, user_id, update_data)
+    if expense is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Expense not found",
+        )
+    return ExpenseResponse.model_validate(expense)
+
+
+@router.delete("/agent/expense/{expense_id}", dependencies=[Depends(verify_agent_key)])
+def delete_agent_expense(
+    expense_id: int,
+    user_id: str = Query(...),
+    db: Session = Depends(get_db),
+):
+    deleted = expense_service.delete_expense(db, expense_id, user_id)
+    return {"success": deleted}
 
 
 @router.get("/agent/profile", dependencies=[Depends(verify_agent_key)])

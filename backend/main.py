@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from api import agent_router, chat_router, expense_router, user_router
-from database import Base, engine
+from backend.api import agent_router, chat_router, expense_router, user_router
+from backend.database import Base, engine
 
 
 app = FastAPI(title="AI Budget Assistant API")

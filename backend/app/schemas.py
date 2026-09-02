@@ -1,6 +1,6 @@
 """Compatibility exports for the former schemas module."""
 
-from schemas import (
+from backend.schemas import (
     ChatRequest,
     ChatResponse,
     ExpenseBatch,
