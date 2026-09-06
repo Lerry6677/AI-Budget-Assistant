@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { clearToken, getToken } from '../api/client';
 
 interface AuthState {
@@ -25,31 +25,50 @@ function readUsername(token: string | null): string | null {
   }
 }
 
+// Module-level singleton state so every `useAuth()` consumer shares the same
+// session and re-renders when it changes.
+const listeners = new Set<() => void>();
+let state: AuthState = {
+  token: getToken(),
+  username: readUsername(getToken()),
+  ready: true,
+};
+
+function emit() {
+  for (const fn of listeners) fn();
+}
+
+function update(next: AuthState) {
+  state = next;
+  emit();
+}
+
+export function setSession(token: string): void {
+  update({ token, username: readUsername(token), ready: true });
+}
+
+export function clearSession(): void {
+  clearToken();
+  update({ token: null, username: null, ready: true });
+}
+
 export function useAuth() {
-  const [state, setState] = useState<AuthState>({
-    token: null,
-    username: null,
-    ready: false,
-  });
+  const [, force] = useState(0);
 
   useEffect(() => {
-    const token = getToken();
-    setState({ token, username: readUsername(token), ready: true });
-  }, []);
-
-  const setSession = useCallback((token: string) => {
-    setState({ token, username: readUsername(token), ready: true });
-  }, []);
-
-  const logout = useCallback(() => {
-    clearToken();
-    setState({ token: null, username: null, ready: true });
+    const fn = () => force((n) => n + 1);
+    listeners.add(fn);
+    return () => {
+      listeners.delete(fn);
+    };
   }, []);
 
   return {
-    ...state,
+    token: state.token,
+    username: state.username,
+    ready: state.ready,
     isAuthenticated: !!state.token,
     setSession,
-    logout,
+    logout: clearSession,
   };
 }

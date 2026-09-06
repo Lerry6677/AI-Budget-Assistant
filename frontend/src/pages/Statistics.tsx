@@ -1,11 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
-import { ApiError } from '../api/client';
-import { chat as chatApi } from '../api/chat';
+import { useCallback } from 'react';
 import AvatarBot from '../components/AvatarBot';
+import ChatMessage from '../components/ChatMessage';
+import ChatInput from '../components/ChatInput';
+import { useChat } from '../hooks/useChat';
 
-// Statistics page deliberately leverages the existing /chat endpoint
-// (see PRD §【十九、真实数据】): we do NOT fabricate numbers on the frontend.
-// We display the AI's textual answer verbatim, plus a small "ask AI" panel.
+// 统计页：完全独立的"会话空间"。
+// - 复用 useChat，但用 storageKey 启用"前端 only"模式：
+//   历史只缓存在浏览器 sessionStorage，不写入数据库。
+// - 关闭/刷新页面 / 切回 tab 不会丢失。
+// - thread_id 使用 "local:stats" 前缀：后端 agent 会据此跳过 chat_history 写库。
+const STORAGE_KEY = 'stats_chat_session_v1';
 
 const PRESETS = [
   '我这个月花了多少钱？',
@@ -15,35 +19,23 @@ const PRESETS = [
 ];
 
 export default function Statistics() {
-  const [prompt, setPrompt] = useState('');
-  const [answer, setAnswer] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const {
+    messages,
+    loading,
+    historyLoading,
+    historyEmpty,
+    hasMessages,
+    send: sendViaHook,
+  } = useChat({ thread_id: 'local:stats', storageKey: STORAGE_KEY });
 
-  useEffect(() => {
-    // Auto-ask once so the page is not empty on first entry.
-    ask(PRESETS[0]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const ask = async (text: string) => {
-    const q = text.trim();
-    if (!q || loading) return;
-    setPrompt(q);
-    setError(null);
-    setAnswer(null);
-    setLoading(true);
-    try {
-      const res = await chatApi({ message: q });
-      setAnswer(res.answer);
-    } catch (err) {
-      if (err instanceof ApiError) setError(err.detail);
-      else setError('请求失败');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const ask = useCallback(
+    async (text: string) => {
+      const q = text.trim();
+      if (!q || loading) return;
+      await sendViaHook(q);
+    },
+    [loading, sendViaHook],
+  );
 
   return (
     <div className="page page-stats">
@@ -51,67 +43,63 @@ export default function Statistics() {
         <span className="page-title">统计</span>
       </header>
 
-      <div className="stats-body">
-        <div className="stats-presets">
-          {PRESETS.map((q) => (
-            <button
-              key={q}
-              className={`preset-chip ${prompt === q ? 'is-active' : ''}`}
-              onClick={() => ask(q)}
-              disabled={loading}
-              type="button"
-            >
-              {q}
-            </button>
-          ))}
-        </div>
-
-        <div className="stats-card">
-          <div className="stats-card-head">
-            <AvatarBot size={28} />
-            <span className="stats-card-title">AI 分析</span>
+      {/* 三态渲染：拉历史 → 骨架；无历史 → 欢迎卡片；已有历史 → 聊天列表 */}
+      {!historyLoading && historyEmpty === true && !hasMessages && (
+        <div className="chat-welcome">
+          <AvatarBot size={56} />
+          <p className="welcome-hi">统计</p>
+          <p className="welcome-hint">
+            你可以直接问，也可以点下面的提示词快速开始
+          </p>
+          <div className="quick-row">
+            {PRESETS.map((q) => (
+              <button
+                key={q}
+                className="quick-chip"
+                type="button"
+                onClick={() => ask(q)}
+                disabled={loading}
+              >
+                {q}
+              </button>
+            ))}
           </div>
-          <div className="stats-question">{prompt || '点击上面的提示词快速提问'}</div>
-          <div className="stats-divider" />
-          {loading && (
-            <div className="stats-loading">
-              <span className="dots big"><i /><i /><i /></span>
-              <span>正在为你分析…</span>
+        </div>
+      )}
+
+      <div className="chat-scroll">
+        <div className="chat-list">
+          {historyLoading && hasMessages === false && historyEmpty === null && (
+            <div className="msg-row msg-ai">
+              <div className="msg-avatar">
+                <AvatarBot size={32} />
+              </div>
+              <div className="msg-bubble bubble-ai">
+                <span className="dots big">
+                  <i /> <i /> <i />
+                </span>
+              </div>
             </div>
           )}
-          {error && <div className="stats-error">{error}</div>}
-          {answer && !loading && <div className="stats-answer">{answer}</div>}
-          {!answer && !loading && !error && (
-            <div className="stats-empty">还没有数据，问点什么吧。</div>
+          {messages.map((m) => (
+            <ChatMessage key={m.id} message={m} />
+          ))}
+          {loading && (
+            <div className="msg-row msg-ai">
+              <div className="msg-avatar">
+                <AvatarBot size={32} />
+              </div>
+              <div className="msg-bubble bubble-ai">
+                <span className="dots big">
+                  <i /> <i /> <i />
+                </span>
+              </div>
+            </div>
           )}
         </div>
       </div>
 
-      <form
-        className="chat-input-bar"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (inputRef.current) ask(inputRef.current.value);
-        }}
-      >
-        <input
-          ref={inputRef}
-          className="chat-input"
-          placeholder="问点关于你的消费…"
-          disabled={loading}
-          maxLength={4000}
-        />
-        <button
-          type="submit"
-          className={`chat-send ${loading ? 'is-disabled' : ''}`}
-          disabled={loading}
-          aria-label="发送"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M5 12h12M13 6l6 6-6 6" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-      </form>
+      <ChatInput onSend={ask} loading={loading} />
     </div>
   );
 }

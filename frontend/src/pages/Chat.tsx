@@ -12,7 +12,7 @@ const QUICK_ACTIONS = [
 ];
 
 export default function Chat() {
-  const { messages, loading, send } = useChat();
+  const { messages, loading, historyLoading, historyEmpty, hasMessages, send } = useChat({ thread_id: 'main' });
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,28 +28,46 @@ export default function Chat() {
         </div>
       </header>
 
-      <div className="chat-scroll" ref={listRef}>
+      {/* 三态渲染：
+          1) 拉取中（historyLoading=true）→ 不显示欢迎卡片，等历史回来再渲染
+          2) 拉完且确实没历史（historyEmpty=true）→ 显示欢迎卡片
+          3) 有历史（hasMessages=true）→ 显示聊天列表
+       */}
+      {!historyLoading && historyEmpty === true && !hasMessages && (
         <div className="chat-welcome">
           <AvatarBot size={56} />
           <p className="welcome-hi">你好，今天想记录什么呢？</p>
           <p className="welcome-hint">你可以直接说「今天午饭花了 35 元」</p>
+          <div className="quick-row">
+            {QUICK_ACTIONS.map((q) => (
+              <button
+                key={q.label}
+                className="quick-chip"
+                type="button"
+                onClick={() => send(q.prompt)}
+                disabled={loading}
+              >
+                {q.label}
+              </button>
+            ))}
+          </div>
         </div>
+      )}
 
-        <div className="quick-row">
-          {QUICK_ACTIONS.map((q) => (
-            <button
-              key={q.label}
-              className="quick-chip"
-              type="button"
-              onClick={() => send(q.prompt)}
-              disabled={loading}
-            >
-              {q.label}
-            </button>
-          ))}
-        </div>
-
+      <div className="chat-scroll" ref={listRef}>
         <div className="chat-list">
+          {historyLoading && hasMessages === false && historyEmpty === null && (
+            <div className="msg-row msg-ai">
+              <div className="msg-avatar">
+                <AvatarBot size={32} />
+              </div>
+              <div className="msg-bubble bubble-ai">
+                <span className="dots big">
+                  <i /> <i /> <i />
+                </span>
+              </div>
+            </div>
+          )}
           {messages.map((m) => (
             <ChatMessage key={m.id} message={m} />
           ))}

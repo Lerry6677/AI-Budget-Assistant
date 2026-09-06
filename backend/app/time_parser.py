@@ -94,6 +94,30 @@ def parse_expense_time(text: str | None) -> datetime | None:
             ).date()
 
     # =========================
+    # 3b. 短日期：9.6 / 9-6 / 9/6
+    # =========================
+
+    if date is None:
+
+        match = re.search(
+            r"(?<!\d)(\d{1,2})[./\-](\d{1,2})(?!\d)",
+            text
+        )
+
+        if match:
+
+            month = int(match.group(1))
+            day = int(match.group(2))
+
+            if 1 <= month <= 12 and 1 <= day <= 31:
+
+                date = datetime(
+                    now.year,
+                    month,
+                    day
+                ).date()
+
+    # =========================
     # 4. 完整日期：2026年8月18日
     # =========================
 
@@ -124,15 +148,11 @@ def parse_expense_time(text: str | None) -> datetime | None:
         hour = 2
         minute = 0
 
-    elif "早上" in text or "早晨" in text:
+    elif "早饭" in text or "早餐" in text:
         hour = 8
         minute = 0
 
-    elif "上午" in text:
-        hour = 10
-        minute = 0
-
-    elif "中午" in text:
+    elif "午饭" in text or "午餐" in text or "中午" in text:
         hour = 12
         minute = 0
 
@@ -140,8 +160,16 @@ def parse_expense_time(text: str | None) -> datetime | None:
         hour = 15
         minute = 0
 
-    elif "晚上" in text or "晚" in text:
+    elif "晚饭" in text or "晚餐" in text or "晚上" in text or "晚" in text:
         hour = 19
+        minute = 0
+
+    elif "上午" in text:
+        hour = 10
+        minute = 0
+
+    elif "早上" in text or "早晨" in text:
+        hour = 8
         minute = 0
 
     else:

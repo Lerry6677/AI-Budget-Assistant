@@ -118,7 +118,15 @@ def expense_node(state: AgentState) -> dict:
         "user_id": state["user_id"],
         "expenses": expenses_payload,
     })
-    return {"reply": _summarize(tool_result)}
+    reply = _summarize(tool_result)
+    # 持久化：expense_node 完成后也写历史（让前端刷新后能看到 expense 类对话）
+    # 跳过 "local:*" 前缀的 thread（如统计页前端 only 模式）。
+    if not state["thread_id"].startswith("local:"):
+        try:
+            rag.save_chat(state["user_id"], state["thread_id"], state["input"], reply)
+        except Exception:
+            pass
+    return {"reply": reply}
 
 
 def chat_node(state: AgentState) -> dict:
@@ -161,12 +169,13 @@ def chat_node(state: AgentState) -> dict:
     })
 
     reply = result.content
-    # 3) 持久化
-    try:
-        rag.save_chat(user_id, thread_id, user_input, reply)
-    except Exception:
-        # 写历史失败不打断主流程
-        pass
+    # 3) 持久化：跳过"前端 only" thread（如 stats 页面），避免污染 AI 记账的 chat_history。
+    if not thread_id.startswith("local:"):
+        try:
+            rag.save_chat(user_id, thread_id, user_input, reply)
+        except Exception:
+            # 写历史失败不打断主流程
+            pass
     return {"reply": reply}
 
 
@@ -187,7 +196,13 @@ def query_node(state: AgentState) -> dict:
         "end_date": params.end_date,
         "category": params.category,
     })
-    return {"reply": _summarize_query(tool_result)}
+    reply = _summarize_query(tool_result)
+    if not state["thread_id"].startswith("local:"):
+        try:
+            rag.save_chat(state["user_id"], state["thread_id"], state["input"], reply)
+        except Exception:
+            pass
+    return {"reply": reply}
 
 
 def analyze_node(state: AgentState) -> dict:
@@ -207,7 +222,13 @@ def analyze_node(state: AgentState) -> dict:
         "start_date": params.start_date,
         "end_date": params.end_date,
     })
-    return {"reply": _summarize_analyze(tool_result)}
+    reply = _summarize_analyze(tool_result)
+    if not state["thread_id"].startswith("local:"):
+        try:
+            rag.save_chat(state["user_id"], state["thread_id"], state["input"], reply)
+        except Exception:
+            pass
+    return {"reply": reply}
 
 
 def budget_node(state: AgentState) -> dict:
@@ -227,7 +248,13 @@ def budget_node(state: AgentState) -> dict:
         "savings_goal": params.savings_goal,
         "financial_goal": params.financial_goal,
     })
-    return {"reply": _summarize_budget(tool_result)}
+    reply = _summarize_budget(tool_result)
+    if not state["thread_id"].startswith("local:"):
+        try:
+            rag.save_chat(state["user_id"], state["thread_id"], state["input"], reply)
+        except Exception:
+            pass
+    return {"reply": reply}
 
 
 # ----------------------------------------------------------------------------

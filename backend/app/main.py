@@ -1,5 +1,5 @@
 """Compatibility entry point for the former ``app.main:app`` launch target."""
 
-from backend.main import app
+from main import app  # noqa: F401
 
 __all__ = ["app"]
