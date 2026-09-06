@@ -21,6 +21,8 @@ START → intent_node
 node 内部写法：接收 state，返回 dict（增量更新），由 LangGraph 自动 merge 到 state。
 """
 
+import logging
+
 from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, START, StateGraph
@@ -190,12 +192,27 @@ def chat_node(state: AgentState) -> dict:
     thread_id = state.get("thread_id") or f"anon_{user_id}"
 
     # 1) 拼 RAG 段落（L3-6：跨 thread，排除当前 thread 防止自召回噪声）
-    rag_section = rag.build_rag_prompt_section_cross_thread(
+    # Task 20：拿 meta 出来做可观测性（logger.info + 不修改 AgentState）。
+    rag_section, rag_meta = rag.build_rag_prompt_section_cross_thread(
         user_id=user_id,
         query=user_input,
         top_k=5,
         exclude_thread_id=thread_id,
         current_thread_id=thread_id,
+        return_meta=True,
+    )
+    # Task 20：在 chat_node 入口统一输出 RAG 指标（不论命中 0/1/N 都有日志）。
+    # AgentState 不变 → 现有 L3-7 graph_contract 不破。
+    logging.getLogger(__name__).info(
+        "chat_node.rag_meta user_id=%s thread_id=%s hits=%d "
+        "deduped=%d avg_sim=%.3f max_sim=%.3f took_ms=%.2f",
+        user_id,
+        thread_id,
+        rag_meta.get("hits", 0),
+        rag_meta.get("deduped", 0),
+        rag_meta.get("avg_sim", 0.0),
+        rag_meta.get("max_sim", 0.0),
+        rag_meta.get("took_ms", 0.0),
     )
     # 2) 调 LLM
     if rag_section:
