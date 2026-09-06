@@ -1,0 +1,1088 @@
+{
+  "timestamp": "2026-09-06",
+  "mode": "DRY-RUN (no DB changes)",
+  "summary": {
+    "e2e_users_count": 18,
+    "e2e_expense_count": 11,
+    "e2e_chat_count": 15,
+    "orphan_expense_user_ids": [
+      "current_user",
+      "default",
+      "test_time_parse",
+      "test_user_001",
+      "user001"
+    ],
+    "orphan_expense_count": 40,
+    "orphan_chat_user_ids": [
+      "B",
+      "X",
+      "u1"
+    ],
+    "orphan_chat_count": 8,
+    "legacy_thread_count": 11,
+    "real_user_candidate_count": 2,
+    "real_user_ids": [
+      1,
+      2
+    ]
+  },
+  "category_A_e2e": {
+    "description": "E2E 测试数据 (username LIKE e2e_%)",
+    "users": [
+      {
+        "id": 5,
+        "username": "e2e_userA_20260906103910",
+        "created_at": "2026-09-06 10:39:12"
+      },
+      {
+        "id": 6,
+        "username": "e2e_userB_20260906103910",
+        "created_at": "2026-09-06 10:39:13"
+      },
+      {
+        "id": 7,
+        "username": "e2e_userA_20260906104045",
+        "created_at": "2026-09-06 10:40:46"
+      },
+      {
+        "id": 8,
+        "username": "e2e_userB_20260906104045",
+        "created_at": "2026-09-06 10:40:46"
+      },
+      {
+        "id": 9,
+        "username": "e2e_userA_20260906104213",
+        "created_at": "2026-09-06 10:42:15"
+      },
+      {
+        "id": 10,
+        "username": "e2e_userB_20260906104213",
+        "created_at": "2026-09-06 10:42:15"
+      },
+      {
+        "id": 11,
+        "username": "e2e_userA_20260906104645",
+        "created_at": "2026-09-06 10:46:46"
+      },
+      {
+        "id": 12,
+        "username": "e2e_userB_20260906104645",
+        "created_at": "2026-09-06 10:46:47"
+      },
+      {
+        "id": 13,
+        "username": "e2e_userA_20260906104722",
+        "created_at": "2026-09-06 10:47:24"
+      },
+      {
+        "id": 14,
+        "username": "e2e_userB_20260906104722",
+        "created_at": "2026-09-06 10:47:25"
+      },
+      {
+        "id": 15,
+        "username": "e2e_userA_20260906104857",
+        "created_at": "2026-09-06 10:48:58"
+      },
+      {
+        "id": 16,
+        "username": "e2e_userB_20260906104857",
+        "created_at": "2026-09-06 10:48:58"
+      },
+      {
+        "id": 17,
+        "username": "e2e_userA_20260906105835",
+        "created_at": "2026-09-06 10:58:36"
+      },
+      {
+        "id": 18,
+        "username": "e2e_userB_20260906105835",
+        "created_at": "2026-09-06 10:58:36"
+      },
+      {
+        "id": 19,
+        "username": "e2e_userA_20260906145034",
+        "created_at": "2026-09-06 14:50:35"
+      },
+      {
+        "id": 20,
+        "username": "e2e_userB_20260906145034",
+        "created_at": "2026-09-06 14:50:36"
+      },
+      {
+        "id": 21,
+        "username": "e2e_userA_20260906145058",
+        "created_at": "2026-09-06 14:50:59"
+      },
+      {
+        "id": 22,
+        "username": "e2e_userB_20260906145058",
+        "created_at": "2026-09-06 14:50:59"
+      }
+    ],
+    "expense": [
+      {
+        "id": 210,
+        "user_id": "9",
+        "amount": "30.00",
+        "description": "???",
+        "expense_time": "None",
+        "created_at": "2026-09-06 10:42:17"
+      },
+      {
+        "id": 211,
+        "user_id": "9",
+        "amount": "30.00",
+        "description": "??",
+        "expense_time": "None",
+        "created_at": "2026-09-06 10:43:36"
+      },
+      {
+        "id": 212,
+        "user_id": "9",
+        "amount": "35.50",
+        "description": "午饭",
+        "expense_time": "2026-09-06 12:00:00",
+        "created_at": "2026-09-06 10:45:50"
+      },
+      {
+        "id": 213,
+        "user_id": "11",
+        "amount": "30.00",
+        "description": "午饭",
+        "expense_time": "2026-09-06 12:00:00",
+        "created_at": "2026-09-06 10:46:51"
+      },
+      {
+        "id": 214,
+        "user_id": "12",
+        "amount": "20.00",
+        "description": "晚饭",
+        "expense_time": "2026-09-06 19:00:00",
+        "created_at": "2026-09-06 10:46:58"
+      },
+      {
+        "id": 215,
+        "user_id": "17",
+        "amount": "30.00",
+        "description": "午饭",
+        "expense_time": "2026-09-06 12:00:00",
+        "created_at": "2026-09-06 10:59:13"
+      },
+      {
+        "id": 216,
+        "user_id": "18",
+        "amount": "20.00",
+        "description": "晚饭",
+        "expense_time": "2026-09-06 19:00:00",
+        "created_at": "2026-09-06 10:59:28"
+      },
+      {
+        "id": 217,
+        "user_id": "19",
+        "amount": "30.00",
+        "description": "午饭",
+        "expense_time": "2026-09-06 12:00:00",
+        "created_at": "2026-09-06 14:50:36"
+      },
+      {
+        "id": 218,
+        "user_id": "20",
+        "amount": "20.00",
+        "description": "晚饭",
+        "expense_time": "2026-09-06 19:00:00",
+        "created_at": "2026-09-06 14:50:40"
+      },
+      {
+        "id": 219,
+        "user_id": "21",
+        "amount": "30.00",
+        "description": "午饭",
+        "expense_time": "2026-09-06 12:00:00",
+        "created_at": "2026-09-06 14:51:00"
+      },
+      {
+        "id": 220,
+        "user_id": "22",
+        "amount": "20.00",
+        "description": "晚饭",
+        "expense_time": "2026-09-06 19:00:00",
+        "created_at": "2026-09-06 14:51:02"
+      }
+    ],
+    "chat_history": [
+      {
+        "id": 113,
+        "user_id": "5",
+        "thread_id": "user_5",
+        "user_input": "????30?",
+        "created_at": "2026-09-06 10:39:19"
+      },
+      {
+        "id": 114,
+        "user_id": "6",
+        "thread_id": "user_6",
+        "user_input": "?????????",
+        "created_at": "2026-09-06 10:39:25"
+      },
+      {
+        "id": 115,
+        "user_id": "6",
+        "thread_id": "user_6",
+        "user_input": "????20?",
+        "created_at": "2026-09-06 10:39:29"
+      },
+      {
+        "id": 116,
+        "user_id": "7",
+        "thread_id": "user_7",
+        "user_input": "????30?",
+        "created_at": "2026-09-06 10:40:51"
+      },
+      {
+        "id": 117,
+        "user_id": "8",
+        "thread_id": "user_8",
+        "user_input": "?????????",
+        "created_at": "2026-09-06 10:40:56"
+      },
+      {
+        "id": 118,
+        "user_id": "8",
+        "thread_id": "user_8",
+        "user_input": "????20?",
+        "created_at": "2026-09-06 10:41:01"
+      },
+      {
+        "id": 119,
+        "user_id": "13",
+        "thread_id": "user_13",
+        "user_input": "????30?",
+        "created_at": "2026-09-06 10:47:58"
+      },
+      {
+        "id": 120,
+        "user_id": "14",
+        "thread_id": "user_14",
+        "user_input": "?????????",
+        "created_at": "2026-09-06 10:48:03"
+      },
+      {
+        "id": 121,
+        "user_id": "14",
+        "thread_id": "user_14",
+        "user_input": "????20?",
+        "created_at": "2026-09-06 10:48:06"
+      },
+      {
+        "id": 122,
+        "user_id": "15",
+        "thread_id": "user_15",
+        "user_input": "????30?",
+        "created_at": "2026-09-06 10:49:04"
+      },
+      {
+        "id": 123,
+        "user_id": "16",
+        "thread_id": "user_16",
+        "user_input": "?????????",
+        "created_at": "2026-09-06 10:49:12"
+      },
+      {
+        "id": 124,
+        "user_id": "16",
+        "thread_id": "user_16",
+        "user_input": "????20?",
+        "created_at": "2026-09-06 10:49:21"
+      },
+      {
+        "id": 126,
+        "user_id": "17",
+        "thread_id": "user_17",
+        "user_input": "今天午饭30元",
+        "created_at": "2026-09-06 10:59:13"
+      },
+      {
+        "id": 127,
+        "user_id": "18",
+        "thread_id": "user_18",
+        "user_input": "我今天花了多少钱？",
+        "created_at": "2026-09-06 10:59:21"
+      },
+      {
+        "id": 128,
+        "user_id": "18",
+        "thread_id": "user_18",
+        "user_input": "今天晚饭20元",
+        "created_at": "2026-09-06 10:59:28"
+      }
+    ]
+  },
+  "category_B_orphan_expense": {
+    "description": "Orphan expense.user_id (user_id 不在 users.id 中, 历史开发残留)",
+    "values": [
+      "current_user",
+      "default",
+      "test_time_parse",
+      "test_user_001",
+      "user001"
+    ],
+    "rows": [
+      {
+        "id": 49,
+        "user_id": "current_user",
+        "amount": "5.30",
+        "description": "早饭",
+        "expense_time": "2026-08-28 02:58:34",
+        "created_at": "2026-08-28 10:58:38"
+      },
+      {
+        "id": 46,
+        "user_id": "default",
+        "amount": "30.00",
+        "description": "午饭",
+        "expense_time": "2025-06-15 12:00:00",
+        "created_at": "2026-08-27 17:24:34"
+      },
+      {
+        "id": 47,
+        "user_id": "default",
+        "amount": "30.00",
+        "description": "午饭",
+        "expense_time": "2026-08-27 00:00:00",
+        "created_at": "2026-08-27 17:39:30"
+      },
+      {
+        "id": 33,
+        "user_id": "test_time_parse",
+        "amount": "30.00",
+        "description": "午餐",
+        "expense_time": "2026-08-24 12:00:00",
+        "created_at": "2026-08-25 10:47:55"
+      },
+      {
+        "id": 34,
+        "user_id": "test_time_parse",
+        "amount": "10.00",
+        "description": "晚餐",
+        "expense_time": "2026-08-25 19:00:00",
+        "created_at": "2026-08-25 10:47:55"
+      },
+      {
+        "id": 35,
+        "user_id": "test_time_parse",
+        "amount": "50.00",
+        "description": "早餐",
+        "expense_time": "2026-08-25 08:00:00",
+        "created_at": "2026-08-25 10:47:55"
+      },
+      {
+        "id": 27,
+        "user_id": "test_user_001",
+        "amount": "35.50",
+        "description": "午餐外卖",
+        "expense_time": "2026-08-25 12:00:00",
+        "created_at": "2026-08-25 10:38:12"
+      },
+      {
+        "id": 28,
+        "user_id": "test_user_001",
+        "amount": "12.00",
+        "description": "地铁通勤",
+        "expense_time": "2026-08-24 08:00:00",
+        "created_at": "2026-08-25 10:38:12"
+      },
+      {
+        "id": 29,
+        "user_id": "test_user_001",
+        "amount": "199.00",
+        "description": "买了一件T恤",
+        "expense_time": "None",
+        "created_at": "2026-08-25 10:38:12"
+      },
+      {
+        "id": 1,
+        "user_id": "user001",
+        "amount": "15.00",
+        "description": "午饭",
+        "expense_time": "2026-08-09 12:30:00",
+        "created_at": "2026-08-09 20:42:20"
+      },
+      {
+        "id": 2,
+        "user_id": "user001",
+        "amount": "8.50",
+        "description": "地铁",
+        "expense_time": "2026-08-09 08:10:00",
+        "created_at": "2026-08-09 20:42:20"
+      },
+      {
+        "id": 3,
+        "user_id": "user001",
+        "amount": "99.00",
+        "description": "买键盘",
+        "expense_time": "2026-08-08 20:00:00",
+        "created_at": "2026-08-09 20:42:20"
+      },
+      {
+        "id": 5,
+        "user_id": "user001",
+        "amount": "25.00",
+        "description": "午饭",
+        "expense_time": "2026-08-09 12:30:00",
+        "created_at": "2026-08-09 21:10:14"
+      },
+      {
+        "id": 6,
+        "user_id": "user001",
+        "amount": "15.00",
+        "description": "午饭",
+        "expense_time": "None",
+        "created_at": "2026-08-09 21:45:32"
+      },
+      {
+        "id": 7,
+        "user_id": "user001",
+        "amount": "20.00",
+        "description": "打车",
+        "expense_time": "None",
+        "created_at": "2026-08-09 21:45:32"
+      },
+      {
+        "id": 8,
+        "user_id": "user001",
+        "amount": "15.00",
+        "description": "午饭",
+        "expense_time": "2026-08-09 21:50:24",
+        "created_at": "2026-08-09 21:50:25"
+      },
+      {
+        "id": 9,
+        "user_id": "user001",
+        "amount": "20.00",
+        "description": "打车",
+        "expense_time": "2026-08-09 21:50:25",
+        "created_at": "2026-08-09 21:50:25"
+      },
+      {
+        "id": 10,
+        "user_id": "user001",
+        "amount": "15.00",
+        "description": "午饭",
+        "expense_time": "2026-08-18 16:57:26",
+        "created_at": "2026-08-18 16:57:26"
+      },
+      {
+        "id": 12,
+        "user_id": "user001",
+        "amount": "120.00",
+        "description": "火锅",
+        "expense_time": "None",
+        "created_at": "2026-08-20 18:39:39"
+      },
+      {
+        "id": 13,
+        "user_id": "user001",
+        "amount": "120.00",
+        "description": "火锅",
+        "expense_time": "None",
+        "created_at": "2026-08-20 18:40:46"
+      },
+      {
+        "id": 14,
+        "user_id": "user001",
+        "amount": "120.00",
+        "description": "火锅",
+        "expense_time": "2026-08-19 19:00:00",
+        "created_at": "2026-08-20 18:47:31"
+      },
+      {
+        "id": 15,
+        "user_id": "user001",
+        "amount": "120.00",
+        "description": "火锅",
+        "expense_time": "2026-08-19 19:00:00",
+        "created_at": "2026-08-20 18:48:00"
+      },
+      {
+        "id": 16,
+        "user_id": "user001",
+        "amount": "15.00",
+        "description": "午饭",
+        "expense_time": "None",
+        "created_at": "2026-08-20 18:49:29"
+      },
+      {
+        "id": 17,
+        "user_id": "user001",
+        "amount": "50.00",
+        "description": "看电影",
+        "expense_time": "2026-08-18 15:00:00",
+        "created_at": "2026-08-20 18:50:03"
+      },
+      {
+        "id": 18,
+        "user_id": "user001",
+        "amount": "15.00",
+        "description": "午饭",
+        "expense_time": "None",
+        "created_at": "2026-08-20 18:50:23"
+      },
+      {
+        "id": 19,
+        "user_id": "user001",
+        "amount": "20.00",
+        "description": "打车",
+        "expense_time": "None",
+        "created_at": "2026-08-20 18:50:23"
+      },
+      {
+        "id": 20,
+        "user_id": "user001",
+        "amount": "15.00",
+        "description": "午饭",
+        "expense_time": "None",
+        "created_at": "2026-08-20 19:50:38"
+      },
+      {
+        "id": 21,
+        "user_id": "user001",
+        "amount": "120.00",
+        "description": "火锅",
+        "expense_time": "2026-08-20 19:00:00",
+        "created_at": "2026-08-21 20:55:30"
+      },
+      {
+        "id": 24,
+        "user_id": "user001",
+        "amount": "50.00",
+        "description": "吃饭",
+        "expense_time": "2026-08-24 12:00:00",
+        "created_at": "2026-08-25 10:28:39"
+      },
+      {
+        "id": 25,
+        "user_id": "user001",
+        "amount": "30.00",
+        "description": "打车",
+        "expense_time": "None",
+        "created_at": "2026-08-25 10:28:39"
+      },
+      {
+        "id": 26,
+        "user_id": "user001",
+        "amount": "15.00",
+        "description": "奶茶",
+        "expense_time": "None",
+        "created_at": "2026-08-25 10:28:39"
+      },
+      {
+        "id": 30,
+        "user_id": "user001",
+        "amount": "50.00",
+        "description": "吃饭",
+        "expense_time": "2026-08-24 12:00:00",
+        "created_at": "2026-08-25 10:39:42"
+      },
+      {
+        "id": 31,
+        "user_id": "user001",
+        "amount": "30.00",
+        "description": "打车",
+        "expense_time": "None",
+        "created_at": "2026-08-25 10:39:42"
+      },
+      {
+        "id": 32,
+        "user_id": "user001",
+        "amount": "15.00",
+        "description": "奶茶",
+        "expense_time": "None",
+        "created_at": "2026-08-25 10:39:42"
+      },
+      {
+        "id": 36,
+        "user_id": "user001",
+        "amount": "50.00",
+        "description": "吃饭",
+        "expense_time": "2026-08-24 12:00:00",
+        "created_at": "2026-08-25 10:52:24"
+      },
+      {
+        "id": 37,
+        "user_id": "user001",
+        "amount": "30.00",
+        "description": "打车",
+        "expense_time": "2026-08-25 19:00:00",
+        "created_at": "2026-08-25 10:52:24"
+      },
+      {
+        "id": 38,
+        "user_id": "user001",
+        "amount": "15.00",
+        "description": "奶茶",
+        "expense_time": "None",
+        "created_at": "2026-08-25 10:52:24"
+      },
+      {
+        "id": 39,
+        "user_id": "user001",
+        "amount": "12.30",
+        "description": "吃饭",
+        "expense_time": "2026-08-23 12:00:00",
+        "created_at": "2026-08-25 10:57:26"
+      },
+      {
+        "id": 40,
+        "user_id": "user001",
+        "amount": "15.00",
+        "description": "奶茶",
+        "expense_time": "2026-08-23 12:00:00",
+        "created_at": "2026-08-25 10:57:26"
+      },
+      {
+        "id": 50,
+        "user_id": "user001",
+        "amount": "35.00",
+        "description": "今天晚上吃饭",
+        "expense_time": "2026-08-28 19:00:00",
+        "created_at": "2026-08-28 11:31:03"
+      }
+    ]
+  },
+  "category_C_orphan_chat": {
+    "description": "Orphan chat_history.user_id (user_id 不在 users.id 中, 历史开发残留)",
+    "values": [
+      "B",
+      "X",
+      "u1"
+    ],
+    "rows": [
+      {
+        "id": 2,
+        "user_id": "B",
+        "thread_id": "anon_B",
+        "user_input": "你好",
+        "created_at": "2026-09-02 19:53:41"
+      },
+      {
+        "id": 50,
+        "user_id": "B",
+        "thread_id": "anon_B",
+        "user_input": "你好",
+        "created_at": "2026-09-02 19:55:51"
+      },
+      {
+        "id": 47,
+        "user_id": "u1",
+        "thread_id": "anon_8cd96f7fc49b494798b18638c4fa7f59",
+        "user_input": "你好呀",
+        "created_at": "2026-09-02 19:53:47"
+      },
+      {
+        "id": 48,
+        "user_id": "u1",
+        "thread_id": "anon_u1",
+        "user_input": "你好呀",
+        "created_at": "2026-09-02 19:53:47"
+      },
+      {
+        "id": 95,
+        "user_id": "u1",
+        "thread_id": "anon_82f826274de54ca186daf4254a42fce8",
+        "user_input": "你好呀",
+        "created_at": "2026-09-02 19:55:56"
+      },
+      {
+        "id": 96,
+        "user_id": "u1",
+        "thread_id": "anon_u1",
+        "user_input": "你好呀",
+        "created_at": "2026-09-02 19:55:56"
+      },
+      {
+        "id": 3,
+        "user_id": "X",
+        "thread_id": "anon_X",
+        "user_input": "你好",
+        "created_at": "2026-09-02 19:53:41"
+      },
+      {
+        "id": 51,
+        "user_id": "X",
+        "thread_id": "anon_X",
+        "user_input": "你好",
+        "created_at": "2026-09-02 19:55:52"
+      }
+    ]
+  },
+  "category_D_legacy_thread": {
+    "description": "Legacy thread_id (main, anon_*) — 旧 LangGraph 会话命名残留",
+    "rows": [
+      {
+        "id": 2,
+        "user_id": "B",
+        "thread_id": "anon_B",
+        "user_input": "你好",
+        "created_at": "2026-09-02 19:53:41"
+      },
+      {
+        "id": 3,
+        "user_id": "X",
+        "thread_id": "anon_X",
+        "user_input": "你好",
+        "created_at": "2026-09-02 19:53:41"
+      },
+      {
+        "id": 47,
+        "user_id": "u1",
+        "thread_id": "anon_8cd96f7fc49b494798b18638c4fa7f59",
+        "user_input": "你好呀",
+        "created_at": "2026-09-02 19:53:47"
+      },
+      {
+        "id": 48,
+        "user_id": "u1",
+        "thread_id": "anon_u1",
+        "user_input": "你好呀",
+        "created_at": "2026-09-02 19:53:47"
+      },
+      {
+        "id": 50,
+        "user_id": "B",
+        "thread_id": "anon_B",
+        "user_input": "你好",
+        "created_at": "2026-09-02 19:55:51"
+      },
+      {
+        "id": 51,
+        "user_id": "X",
+        "thread_id": "anon_X",
+        "user_input": "你好",
+        "created_at": "2026-09-02 19:55:52"
+      },
+      {
+        "id": 95,
+        "user_id": "u1",
+        "thread_id": "anon_82f826274de54ca186daf4254a42fce8",
+        "user_input": "你好呀",
+        "created_at": "2026-09-02 19:55:56"
+      },
+      {
+        "id": 96,
+        "user_id": "u1",
+        "thread_id": "anon_u1",
+        "user_input": "你好呀",
+        "created_at": "2026-09-02 19:55:56"
+      },
+      {
+        "id": 107,
+        "user_id": "2",
+        "thread_id": "main",
+        "user_input": "测试main记账",
+        "created_at": "2026-09-06 10:22:46"
+      },
+      {
+        "id": 108,
+        "user_id": "2",
+        "thread_id": "main",
+        "user_input": "今天午饭花了 88 元",
+        "created_at": "2026-09-06 10:24:32"
+      },
+      {
+        "id": 109,
+        "user_id": "2",
+        "thread_id": "main",
+        "user_input": "今天早饭5",
+        "created_at": "2026-09-06 10:26:12"
+      }
+    ]
+  },
+  "category_E_real_users": {
+    "description": "真实用户候选 (username NOT LIKE e2e_%, 但需用户确认)",
+    "users": [
+      {
+        "id": 1,
+        "username": "testuser",
+        "created_at": "2026-08-24 10:46:48"
+      },
+      {
+        "id": 2,
+        "username": "wan9Wang",
+        "created_at": "2026-09-06 09:30:08"
+      }
+    ]
+  },
+  "expense_distribution": [
+    {
+      "user_id": "user001",
+      "count": 31,
+      "first_id": 1,
+      "last_id": 50
+    },
+    {
+      "user_id": "2",
+      "count": 5,
+      "first_id": 203,
+      "last_id": 207
+    },
+    {
+      "user_id": "test_user_001",
+      "count": 3,
+      "first_id": 27,
+      "last_id": 29
+    },
+    {
+      "user_id": "test_time_parse",
+      "count": 3,
+      "first_id": 33,
+      "last_id": 35
+    },
+    {
+      "user_id": "9",
+      "count": 3,
+      "first_id": 210,
+      "last_id": 212
+    },
+    {
+      "user_id": "1",
+      "count": 2,
+      "first_id": 22,
+      "last_id": 23
+    },
+    {
+      "user_id": "default",
+      "count": 2,
+      "first_id": 46,
+      "last_id": 47
+    },
+    {
+      "user_id": "current_user",
+      "count": 1,
+      "first_id": 49,
+      "last_id": 49
+    },
+    {
+      "user_id": "11",
+      "count": 1,
+      "first_id": 213,
+      "last_id": 213
+    },
+    {
+      "user_id": "12",
+      "count": 1,
+      "first_id": 214,
+      "last_id": 214
+    },
+    {
+      "user_id": "17",
+      "count": 1,
+      "first_id": 215,
+      "last_id": 215
+    },
+    {
+      "user_id": "18",
+      "count": 1,
+      "first_id": 216,
+      "last_id": 216
+    },
+    {
+      "user_id": "19",
+      "count": 1,
+      "first_id": 217,
+      "last_id": 217
+    },
+    {
+      "user_id": "20",
+      "count": 1,
+      "first_id": 218,
+      "last_id": 218
+    },
+    {
+      "user_id": "21",
+      "count": 1,
+      "first_id": 219,
+      "last_id": 219
+    },
+    {
+      "user_id": "22",
+      "count": 1,
+      "first_id": 220,
+      "last_id": 220
+    }
+  ],
+  "chat_distribution": [
+    {
+      "user_id": "1",
+      "thread_id": "user_1",
+      "count": 2
+    },
+    {
+      "user_id": "13",
+      "thread_id": "user_13",
+      "count": 1
+    },
+    {
+      "user_id": "14",
+      "thread_id": "user_14",
+      "count": 2
+    },
+    {
+      "user_id": "15",
+      "thread_id": "user_15",
+      "count": 1
+    },
+    {
+      "user_id": "16",
+      "thread_id": "user_16",
+      "count": 2
+    },
+    {
+      "user_id": "17",
+      "thread_id": "user_17",
+      "count": 1
+    },
+    {
+      "user_id": "18",
+      "thread_id": "user_18",
+      "count": 2
+    },
+    {
+      "user_id": "2",
+      "thread_id": "main",
+      "count": 3
+    },
+    {
+      "user_id": "2",
+      "thread_id": "user_2",
+      "count": 9
+    },
+    {
+      "user_id": "5",
+      "thread_id": "user_5",
+      "count": 1
+    },
+    {
+      "user_id": "6",
+      "thread_id": "user_6",
+      "count": 2
+    },
+    {
+      "user_id": "7",
+      "thread_id": "user_7",
+      "count": 1
+    },
+    {
+      "user_id": "8",
+      "thread_id": "user_8",
+      "count": 2
+    },
+    {
+      "user_id": "B",
+      "thread_id": "anon_B",
+      "count": 2
+    },
+    {
+      "user_id": "u1",
+      "thread_id": "anon_82f826274de54ca186daf4254a42fce8",
+      "count": 1
+    },
+    {
+      "user_id": "u1",
+      "thread_id": "anon_8cd96f7fc49b494798b18638c4fa7f59",
+      "count": 1
+    },
+    {
+      "user_id": "u1",
+      "thread_id": "anon_u1",
+      "count": 2
+    },
+    {
+      "user_id": "X",
+      "thread_id": "anon_X",
+      "count": 2
+    }
+  ],
+  "user_profile_distribution": [
+    {
+      "user_id": "pytest_user_0e3f84fdc7f3",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_0ee1434092c6",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_13165bdf4634",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_15131f4f08e7",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_2a1b7d4107bd",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_33776df75e90",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_3550c38fbf67",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_44eb3e7ad483",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_4ca8039fed19",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_5c2b27a5d2c9",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_71382df2a596",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_ae249b509cbc",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_b1c8da5d9532",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_c12a18cbba27",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_c1ce3960f836",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_c1d6d45255bc",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_e8fdf48f3659",
+      "count": 1
+    },
+    {
+      "user_id": "pytest_user_ee6c86261792",
+      "count": 1
+    },
+    {
+      "user_id": "user_001",
+      "count": 1
+    },
+    {
+      "user_id": "user001",
+      "count": 1
+    }
+  ]
+}
