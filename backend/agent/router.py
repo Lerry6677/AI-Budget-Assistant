@@ -136,14 +136,22 @@ _chat_chain = None
 
 
 def _get_chat_chain():
-    """懒构造 chat chain。"""
+    """懒构造 chat chain。
+
+    L3-8：支持 MessagesPlaceholder("history")，让 chat_node 把当前 thread
+    的短期记忆（SqliteSaver 累积的 HumanMessage / AIMessage）拼进 prompt。
+    - history 字段可选（optional=True），未传时占位符为空，老调用方（handle_chat）
+      不传 history 仍可工作。
+    - 顶层 ("human", "{input}") 仍由调用方显式提供本轮用户消息，避免重复。
+    """
     global _chat_chain
     if _chat_chain is None:
-        from langchain_core.prompts import ChatPromptTemplate
+        from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
         # system 段支持可选覆盖：传 system_message 时用其内容，
         # 否则用默认闲聊提示。L3-5 RAG 注入靠这个机制。
         prompt = ChatPromptTemplate.from_messages([
             ("system", "{system_message}"),
+            MessagesPlaceholder("history", optional=True),
             ("human", "{input}"),
         ])
         _chat_chain = prompt | get_llm()

@@ -130,7 +130,7 @@ def expense_node(state: AgentState) -> dict:
 
 
 def chat_node(state: AgentState) -> dict:
-    """处理 chat 意图：拼 RAG 历史段落 → 调 LLM 闲聊 → 把问答对写 chat_history。
+    """处理 chat 意图：拼短期/长期历史 → 调 LLM 闲聊 → 写 chat_history。
 
     L3-5：在 L3-1 闲聊基础上接 RAG（单 thread 内）。
     L3-6：默认升级到跨 thread 检索：
@@ -138,6 +138,13 @@ def chat_node(state: AgentState) -> dict:
         - 用 retrieve_similar_cross_thread(..., exclude_thread_id=当前 thread)
           从"同一用户其他会话"里找长期记忆
         - top_k 提到 5，给 LLM 更多上下文
+
+    L3-8：消费 state["messages"] 作为短期记忆。
+        - intent_node 已把本轮 HumanMessage(state["input"]) push 进 messages，
+          所以这里取 history = state["messages"][:-1]（剥离本轮，避免重复作为 history
+          又显式传给 ("human","{input}")）。
+        - chat_node 返回时再追加 AIMessage(reply)，由 add_messages reducer 写回 state，
+          下一次 invoke 时 SqliteSaver 持久化的 messages 里就包含真实的 user/ai 交替历史。
 
     thread_id 缺失时降级为"无 RAG + 写 anon 历史"，不报错。
     """
@@ -163,9 +170,17 @@ def chat_node(state: AgentState) -> dict:
     else:
         sys_text = "你是 AI Budget Assistant 的闲聊助手。回答简洁友好。"
 
+    # L3-8：短期记忆 = state["messages"] 中除本轮外的 HumanMessage / AIMessage。
+    # intent_node 已 push 本轮 HumanMessage，所以剥离最后一条避免重复。
+    history_msgs = [
+        m for m in (state.get("messages") or [])[:-1]
+        if isinstance(m, (HumanMessage, AIMessage))
+    ]
+
     result = _get_chat_chain().invoke({
         "input": user_input,
         "system_message": sys_text,
+        "history": history_msgs,
     })
 
     reply = result.content
@@ -176,7 +191,9 @@ def chat_node(state: AgentState) -> dict:
         except Exception:
             # 写历史失败不打断主流程
             pass
-    return {"reply": reply}
+    # L3-8：把 AI 回复写回 messages（add_messages reducer 会自动追加），
+    # 让下一轮 invoke 的 SqliteSaver restore 时 LLM 看到完整 user/ai 上下文。
+    return {"reply": reply, "messages": [AIMessage(content=reply)]}
 
 
 def query_node(state: AgentState) -> dict:
