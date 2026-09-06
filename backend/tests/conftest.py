@@ -37,7 +37,7 @@ from fastapi.testclient import TestClient
 
 from backend.database import Base, SessionLocal, engine
 from backend.main import app
-from backend.models import ChatHistory, Expense
+from backend.models import ChatHistory, Expense, UserMemory
 
 # 仅测试生效：SQLite 只对 INTEGER PRIMARY KEY 自增，而 user_profile.id 是 BigInteger；
 # 将测试库中的 BIGINT 渲染为 INTEGER，使自增行为与 MySQL 一致，不改动生产模型。
@@ -90,6 +90,9 @@ def _cleanup_test_expenses(user_id, other_user_id):
         ).delete(synchronize_session=False)
         db.query(ChatHistory).filter(
             ChatHistory.user_id.in_([user_id, other_user_id])
+        ).delete(synchronize_session=False)
+        db.query(UserMemory).filter(
+            UserMemory.user_id.in_([user_id, other_user_id])
         ).delete(synchronize_session=False)
         db.commit()
     finally:

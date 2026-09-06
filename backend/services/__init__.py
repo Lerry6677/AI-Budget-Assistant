@@ -1,3 +1,3 @@
-from . import auth_service, dify_service, expense_service
+from . import auth_service, dify_service, expense_service, memory_service
 
-__all__ = ["auth_service", "dify_service", "expense_service"]
+__all__ = ["auth_service", "dify_service", "expense_service", "memory_service"]

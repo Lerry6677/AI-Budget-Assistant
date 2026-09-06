@@ -87,6 +87,50 @@ def _persist_history(state: AgentState, user_input: str, reply: str) -> None:
 
 
 # ----------------------------------------------------------------------------
+# Task 22 Step 4：Long-term Memory extraction 旁路触发器
+# ----------------------------------------------------------------------------
+# 设计要点：
+# - daemon 线程 fire-and-forget：reply 立即返回，LLM extraction 异步跑。
+# - 不引入新依赖（仅用 stdlib threading）。
+# - chat_node 只在回复写完后触发一次；其他 4 业务节点不挂 extraction。
+# - _safe_extract_and_write_memory 内部已吞掉所有异常；这里再裹一层防御，
+#   确保即使导入或线程启动异常也不影响主流程。
+# - 不修改 AgentState、不改 graph contract / 路由 / 图名 budget_agent_v1。
+import threading as _threading
+
+
+def _dispatch_memory_extraction(user_id: str, user_input: str, reply: str) -> None:
+    """fire-and-forget 触发 Long-term Memory extraction。
+
+    Args:
+        user_id:   用户 ID（chat_node 中已校验存在）。
+        user_input: 用户本轮输入文本。
+        reply:     Agent 本轮回复文本。
+
+    Returns:
+        None（立即返回，extraction 在后台异步执行）。
+    """
+    # 防御：空 user_id 直接跳过
+    if not user_id:
+        return
+    try:
+        from backend.agent.memory import _safe_extract_and_write_memory
+
+        t = _threading.Thread(
+            target=_safe_extract_and_write_memory,
+            args=(user_id, user_input, reply),
+            daemon=True,
+            name=f"mem-extract-{user_id[:8]}",
+        )
+        t.start()
+    except Exception as e:
+        # 任何导入 / 线程启动异常都吞掉，主流程不受影响
+        logging.getLogger(__name__).warning(
+            "chat_node.memory_extraction dispatch failed: %s", e
+        )
+
+
+# ----------------------------------------------------------------------------
 # Nodes
 # ----------------------------------------------------------------------------
 def intent_node(state: AgentState) -> dict:
@@ -245,6 +289,11 @@ def chat_node(state: AgentState) -> dict:
     reply = result.content
     # 3) 长期层落库（跳过 "local:" 前端的会话，避免污染主 chat_history）。
     _persist_history(state, user_input, reply)
+    # 4) Task 22 Step 4：Long-term Memory extraction（旁路 fire-and-forget）。
+    # - 仅 chat_node 触发；其他 4 业务节点不挂（与 RAG 接入点对齐）。
+    # - daemon 线程异步跑，reply 立即返回不阻塞；异常已被该函数内部吞掉。
+    # - 不修改 AgentState 字段、不改 graph contract / 路由 / 图名。
+    _dispatch_memory_extraction(user_id, user_input, reply)
     # L3-8：把 AI 回复写回 messages（add_messages reducer 会自动追加），
     # 让下一轮 invoke 的 SqliteSaver restore 时 LLM 看到完整 user/ai 上下文。
     return {"reply": reply, "messages": [AIMessage(content=reply)]}

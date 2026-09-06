@@ -9,6 +9,13 @@ from .expense import (
     ExpenseResponse,
     ExpenseUpdate,
 )
+from .user_memory import (
+    ExtractedMemory,
+    ExtractedMemories,
+    MemorySource,
+    MemoryType,
+    UserMemoryResponse,
+)
 from .user_profile import AgentUserProfileUpdate, UserProfileResponse, UserProfileUpdate
 
 __all__ = [
@@ -17,4 +24,7 @@ __all__ = [
     "LoginRequest", "RegisterRequest", "TokenResponse", "UserResponse",
     "ChatRequest", "ChatResponse",
     "AgentUserProfileUpdate", "UserProfileResponse", "UserProfileUpdate",
+    "ExtractedMemory", "ExtractedMemories",
+    "MemorySource", "MemoryType",
+    "UserMemoryResponse",
 ]

@@ -239,6 +239,101 @@ def classify_query_params(user_input: str) -> QueryParams:
 
 
 # =============================================================================
+# Task 22：Memory extraction（结构化长期记忆抽取）
+# =============================================================================
+# 注：本节复用 backend.schemas.user_memory.ExtractedMemory / ExtractedMemories，
+# 保证 service 层写入 / extraction 输出使用同一份契约。
+
+MEMORY_EXTRACTION_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", (
+        "你是长期记忆抽取助手。\n"
+        "从一轮对话中，识别用户透露的'稳定事实 / 偏好 / 习惯 / 事件'，"
+        "作为长期记忆条目返回。\n"
+        "\n"
+        "输出严格 JSON：\n"
+        "  items: 数组；每条记忆包含字段 memory_type / key / value / confidence / source\n"
+        "    memory_type ∈ {fact, preference, habit, event}\n"
+        "      - fact      : 稳定事实（职业、城市、家庭情况）\n"
+        "      - preference: 偏好 / 喜欢什么 / 不喜欢什么\n"
+        "      - habit     : 习惯 / 行为模式（每天喝咖啡 / 周末不下厨）\n"
+        "      - event     : 重要事件 / 时间锚点（'刚搬家''开始学日语'）\n"
+        "    key    : 归一化短名（lowercase + snake_case，<= 64 字符）\n"
+        "             例：'I love coffee' → 'i_love_coffee'；'每周三打羽毛球' → "
+        "'weekly_badminton'\n"
+        "    value  : 完整描述（<= 512 字符）\n"
+        "    confidence: 0.0~1.0，越高表示信号越强\n"
+        "                - 显式陈述（'我喜欢咖啡'）：0.7~0.9\n"
+        "                - 推断（'我不喜欢这个'）：0.4~0.7\n"
+        "    source : 始终填 'llm_extracted'\n"
+        "\n"
+        "规则：\n"
+        "1) **没有稳定信号就返回 items=[]**，不要编造。\n"
+        "   闲聊、纯问答、当下问题（如'我今天花了多少'）都不是长期记忆。\n"
+        "2) 只抽本轮 (user_input, agent_reply) 中**新**出现的信号，"
+        "不要凭对话外常识推断。\n"
+        "3) key 不要包含用户 ID、时间戳、随机数字。\n"
+        "4) confidence < 0.3 的条目不要写入，宁缺毋滥。\n"
+        "5) 输出严格 JSON，字段 items。\n"
+        "   不要 Markdown 代码块，不要任何额外解释。\n"
+    )),
+    ("human", (
+        "USER_INPUT:\n{user_input}\n\nAGENT_REPLY:\n{agent_reply}"
+    )),
+])
+
+
+class MemoryExtractionError(RuntimeError):
+    """memory extraction 失败（仅做内部 signal）。"""
+
+
+_memory_extraction_chain: Runnable | None = None
+
+
+def _build_memory_extraction_chain() -> Runnable:
+    """懒构造 memory extraction chain。"""
+    llm = get_llm()
+    # ExtractedMemories 在 backend.schemas.user_memory 中定义
+    from backend.schemas.user_memory import ExtractedMemories
+    return MEMORY_EXTRACTION_PROMPT | llm.with_structured_output(ExtractedMemories)
+
+
+def extract_memory_from_chat(
+    user_input: str,
+    agent_reply: str,
+) -> list:
+    """从单轮对话抽取长期记忆。
+
+    设计要点（Task 22 Step 3）：
+        - **不读 RAG、不读 chat_history、不读 user_profile**（避免双调用、循环依赖）。
+        - 仅基于当前轮的 (user_input, agent_reply)。
+        - 任何异常向上抛 MemoryExtractionError，由调用方决定是否静默吞掉。
+
+    Args:
+        user_input:  用户原始消息
+        agent_reply: Agent 回复文本
+
+    Returns:
+        list[ExtractedMemory]：可能为空列表（无信号）。
+
+    Raises:
+        MemoryExtractionError: LLM 调用 / 解析失败
+    """
+    global _memory_extraction_chain
+    if _memory_extraction_chain is None:
+        _memory_extraction_chain = _build_memory_extraction_chain()
+
+    from backend.schemas.user_memory import ExtractedMemories
+    try:
+        result: ExtractedMemories = _memory_extraction_chain.invoke({
+            "user_input": user_input,
+            "agent_reply": agent_reply,
+        })
+        return list(result.items)
+    except Exception as e:
+        raise MemoryExtractionError(f"memory extraction 失败: {e}") from e
+
+
+# =============================================================================
 # L3-5：Budget 参数抽取（自然语言 → {savings_goal, financial_goal}）
 # =============================================================================
 class BudgetParams(BaseModel):
