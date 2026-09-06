@@ -59,6 +59,32 @@ MAX_SHORT_MEMORY_MESSAGES = 20
 
 
 # ----------------------------------------------------------------------------
+# Task 19：长期记忆写入 helper（统一 5 个业务节点的 chat_history 落库点）。
+# ----------------------------------------------------------------------------
+def _persist_history(state: AgentState, user_input: str, reply: str) -> None:
+    """把"用户输入 + Agent 回复"持久化到 chat_history（长期层）。
+
+    Task 19 决策 A1：保持现状——5 个业务节点（expense/query/analyze/budget/chat）
+    完成都写 chat_history，由前端 GET /chat/history 拉取刷新后展示。
+    统一经此 helper 调用，集中"是否写 / 写到哪里 / 失败处理"的策略，避免
+    散落在 5 个 node 里出现漂移。
+
+    行为契约：
+        - thread_id 以 "local:" 开头 → 跳过（前端 only 模式，如 stats 页面），
+          避免污染 AI 记账主 thread 的 chat_history。
+        - 写失败（DB 异常）→ 静默吞掉，不打断主流程（聊天优先于历史）。
+    """
+    thread_id = state.get("thread_id") or ""
+    if thread_id.startswith("local:"):
+        return
+    try:
+        rag.save_chat(state["user_id"], thread_id, user_input, reply)
+    except Exception:
+        # 写历史失败不打断主流程（聊天可用性优先于历史完整性）
+        pass
+
+
+# ----------------------------------------------------------------------------
 # Nodes
 # ----------------------------------------------------------------------------
 def intent_node(state: AgentState) -> dict:
@@ -125,13 +151,8 @@ def expense_node(state: AgentState) -> dict:
         "expenses": expenses_payload,
     })
     reply = _summarize(tool_result)
-    # 持久化：expense_node 完成后也写历史（让前端刷新后能看到 expense 类对话）
-    # 跳过 "local:*" 前缀的 thread（如统计页前端 only 模式）。
-    if not state["thread_id"].startswith("local:"):
-        try:
-            rag.save_chat(state["user_id"], state["thread_id"], state["input"], reply)
-        except Exception:
-            pass
+    # 长期层落库（让前端刷新后能看到 expense 类对话）
+    _persist_history(state, state["input"], reply)
     return {"reply": reply}
 
 
@@ -151,6 +172,16 @@ def chat_node(state: AgentState) -> dict:
           又显式传给 ("human","{input}")）。
         - chat_node 返回时再追加 AIMessage(reply)，由 add_messages reducer 写回 state，
           下一次 invoke 时 SqliteSaver 持久化的 messages 里就包含真实的 user/ai 交替历史。
+
+    Task 19 决策 B1：短期层 history 拼接**有意只覆盖 chat 类上下文**。
+        - expense/query/analyze/budget 节点不写 AIMessage 回 state.messages，
+          所以同 thread 出现"chat → expense → chat"时，state.messages 形如
+          [H_chat, A_chat, H_expense, H_chat2] —— expense_node 的 reply 不在
+          短期层里（"看起来像没人回复"是设计而非 bug）。
+        - expense 类的完整回复由长期层 chat_history 承载，前端 GET /chat/history
+          拉取时仍能看到；chat 内的上下文连续性靠 LLM 自己从 history 推断。
+        - 若未来要修复短期层"丢一半 AI 回复"的问题（B2/B3），只需让 4 个节点
+          各自追加 AIMessage(reply) 即可，不改本函数的 history 切片逻辑。
 
     thread_id 缺失时降级为"无 RAG + 写 anon 历史"，不报错。
     """
@@ -195,13 +226,8 @@ def chat_node(state: AgentState) -> dict:
     })
 
     reply = result.content
-    # 3) 持久化：跳过"前端 only" thread（如 stats 页面），避免污染 AI 记账的 chat_history。
-    if not thread_id.startswith("local:"):
-        try:
-            rag.save_chat(user_id, thread_id, user_input, reply)
-        except Exception:
-            # 写历史失败不打断主流程
-            pass
+    # 3) 长期层落库（跳过 "local:" 前端的会话，避免污染主 chat_history）。
+    _persist_history(state, user_input, reply)
     # L3-8：把 AI 回复写回 messages（add_messages reducer 会自动追加），
     # 让下一轮 invoke 的 SqliteSaver restore 时 LLM 看到完整 user/ai 上下文。
     return {"reply": reply, "messages": [AIMessage(content=reply)]}
@@ -225,11 +251,7 @@ def query_node(state: AgentState) -> dict:
         "category": params.category,
     })
     reply = _summarize_query(tool_result)
-    if not state["thread_id"].startswith("local:"):
-        try:
-            rag.save_chat(state["user_id"], state["thread_id"], state["input"], reply)
-        except Exception:
-            pass
+    _persist_history(state, state["input"], reply)
     return {"reply": reply}
 
 
@@ -251,11 +273,7 @@ def analyze_node(state: AgentState) -> dict:
         "end_date": params.end_date,
     })
     reply = _summarize_analyze(tool_result)
-    if not state["thread_id"].startswith("local:"):
-        try:
-            rag.save_chat(state["user_id"], state["thread_id"], state["input"], reply)
-        except Exception:
-            pass
+    _persist_history(state, state["input"], reply)
     return {"reply": reply}
 
 
@@ -264,7 +282,10 @@ def budget_node(state: AgentState) -> dict:
 
     L3-5：与 router.handle_budget 等价，从函数调用改成 state 读写。
     抽参失败时写占位 reply，不抛错打断图。
-    budget 节点完成后**不写 chat_history**（它属于"目标管理"，不是闲聊）。
+
+    Task 19 决策 D1：与 5 个业务节点一致，budget_node 完成后**也**写 chat_history
+    （统一经 _persist_history）。它属于"目标管理"，不是闲聊，但与 expense/query 等
+    一样进长期层，前端刷新后用户能在同 thread 看到完整对话流。
     """
     try:
         params = classify_budget_params(state["input"])
@@ -277,11 +298,7 @@ def budget_node(state: AgentState) -> dict:
         "financial_goal": params.financial_goal,
     })
     reply = _summarize_budget(tool_result)
-    if not state["thread_id"].startswith("local:"):
-        try:
-            rag.save_chat(state["user_id"], state["thread_id"], state["input"], reply)
-        except Exception:
-            pass
+    _persist_history(state, state["input"], reply)
     return {"reply": reply}
 
 
