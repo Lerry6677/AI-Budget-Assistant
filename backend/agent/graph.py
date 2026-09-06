@@ -52,6 +52,12 @@ from backend.agent.tools import (
 )
 
 
+# Task 18：短期记忆窗口上限。
+# 仅作用于"喂给 chat_node LLM 的 history 列表长度"，不影响 SqliteSaver 持久化。
+# 20 条 ≈ 10 轮人机对话：覆盖典型多轮上下文，又不至于让长 thread 撑爆上下文窗口。
+MAX_SHORT_MEMORY_MESSAGES = 20
+
+
 # ----------------------------------------------------------------------------
 # Nodes
 # ----------------------------------------------------------------------------
@@ -176,6 +182,11 @@ def chat_node(state: AgentState) -> dict:
         m for m in (state.get("messages") or [])[:-1]
         if isinstance(m, (HumanMessage, AIMessage))
     ]
+    # Task 18：限制喂给 LLM 的短期记忆窗口，避免长时间使用后上下文无界增长。
+    # 仅截断"展示给 LLM 的 history"，不改动 SqliteSaver 持久化的 messages。
+    # 按消息对截断（保留 human+ai 交替结构，不切到一半对话）。
+    if len(history_msgs) > MAX_SHORT_MEMORY_MESSAGES:
+        history_msgs = history_msgs[-MAX_SHORT_MEMORY_MESSAGES:]
 
     result = _get_chat_chain().invoke({
         "input": user_input,

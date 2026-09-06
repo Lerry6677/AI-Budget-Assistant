@@ -250,3 +250,139 @@ def test_sqlite_saver_round_trip_short_memory(
     assert any("咖啡" in c for c in history_contents), (
         f"第二次 invoke 应看到第一轮历史，实际 {history_contents}"
     )
+
+
+# =============================================================================
+# Task 18：短期 Memory 窗口截断测试
+# =============================================================================
+# chat_node 在拼 history 时只取最近 MAX_SHORT_MEMORY_MESSAGES 条，
+# 防止 thread 长期使用后上下文无界增长。
+# - 仅截断"喂给 LLM 的 history"，不影响 SqliteSaver 持久化。
+# - 按消息对（human + ai）成对截断，不切到一半对话。
+def test_history_window_truncates_old_messages(
+    fresh_graph, mock_chat_chain_recording, mock_intent_chat
+):
+    """超过窗口的历史被截断，最近 N 条仍保留。
+
+    MAX_SHORT_MEMORY_MESSAGES = 20 → 喂给 LLM 的 history 最多 20 条。
+    跑 15 轮（每轮 1 human + 1 ai = 30 条 messages），第 16 轮 invoke 时：
+    - history 长度 ≤ 20
+    - history 不含第 1~5 轮的 HumanMessage（最早 10 条被截断）
+    - history 仍含第 6~15 轮的最近内容
+    """
+    from backend.agent.graph import MAX_SHORT_MEMORY_MESSAGES
+
+    cfg = {"configurable": {"thread_id": "window_t"}}
+
+    # 15 轮对话，每轮 user 说一句话，agent 回 pong
+    num_turns = 15
+    for i in range(num_turns):
+        fresh_graph.invoke(
+            {"user_id": "uw", "input": f"turn{i}_user", "thread_id": "window_t"},
+            config=cfg,
+        )
+
+    # 第 16 轮：触发窗口截断
+    fresh_graph.invoke(
+        {"user_id": "uw", "input": "turn16_user", "thread_id": "window_t"},
+        config=cfg,
+    )
+
+    # 第 16 次 invoke 是 index 15
+    last_kwargs = mock_chat_chain_recording[num_turns]
+    history = last_kwargs.get("history", [])
+    assert len(history) <= MAX_SHORT_MEMORY_MESSAGES, (
+        f"history 应被截断到 ≤{MAX_SHORT_MEMORY_MESSAGES}，实际 {len(history)}"
+    )
+    history_contents = [m.content for m in history]
+
+    # 最早的几轮应该被截掉（30 条 messages 减窗口 20 = 前 10 条丢失）
+    for old in [f"turn{i}_user" for i in range(5)]:
+        assert old not in history_contents, (
+            f"历史 {old!r} 应被窗口截断，实际仍在 history: {history_contents}"
+        )
+
+    # 最近几轮必须保留（最近一条 HumanMessage 倒数第 2 条）
+    assert f"turn{num_turns - 1}_user" in history_contents, (
+        f"最近一轮 {f'turn{num_turns-1}_user'!r} 应在 history，实际 {history_contents}"
+    )
+
+
+def test_history_window_keeps_recent_context(
+    fresh_graph, mock_chat_chain_recording, mock_intent_chat
+):
+    """窗口只截断远的，不影响近的：最近一轮内容仍在 history。
+
+    跑 5 轮对话，最后一轮问"上一轮我说了什么"。
+    验证：第 5 轮的 history 含第 4 轮的 HumanMessage（窗口没误伤近期上下文）。
+    """
+    cfg = {"configurable": {"thread_id": "recent_t"}}
+
+    for i in range(4):
+        fresh_graph.invoke(
+            {"user_id": "ur", "input": f"earlier{i}", "thread_id": "recent_t"},
+            config=cfg,
+        )
+    fresh_graph.invoke(
+        {"user_id": "ur", "input": "上一轮我说了什么", "thread_id": "recent_t"},
+        config=cfg,
+    )
+
+    last_kwargs = mock_chat_chain_recording[4]
+    history = last_kwargs.get("history", [])
+    history_contents = [m.content for m in history]
+    assert "earlier3" in history_contents, (
+        f"上一轮 'earlier3' 应在 history（窗口不该切掉它），实际 {history_contents}"
+    )
+
+
+def test_short_memory_window_does_not_affect_state_messages(
+    fresh_graph, mock_chat_chain_recording, mock_intent_chat
+):
+    """窗口仅影响"喂给 LLM 的 history"，不影响 SqliteSaver 持久化的 messages。
+
+    跑 15 轮（30 条 messages）。
+    - 第 16 轮 chat_chain 收到的 history 长度 ≤ 20（被截断）
+    - 但 graph.get_state() 取出的 state["messages"] 仍是完整 30 条（没丢）
+    """
+    from backend.agent.graph import MAX_SHORT_MEMORY_MESSAGES
+
+    cfg = {"configurable": {"thread_id": "persist_t"}}
+
+    num_turns = 15
+    for i in range(num_turns):
+        fresh_graph.invoke(
+            {"user_id": "up", "input": f"pturn{i}", "thread_id": "persist_t"},
+            config=cfg,
+        )
+
+    # 触发出第 16 轮：history 应被截断
+    fresh_graph.invoke(
+        {"user_id": "up", "input": "pturn_last", "thread_id": "persist_t"},
+        config=cfg,
+    )
+    last_kwargs = mock_chat_chain_recording[num_turns]
+    history = last_kwargs.get("history", [])
+    assert len(history) <= MAX_SHORT_MEMORY_MESSAGES, (
+        f"chat history 应被窗口截断，实际 {len(history)}"
+    )
+
+    # 但 SqliteSaver 里的 state.messages 仍是全部：每轮 1 human + 1 ai，
+    # 共 (num_turns + 1) 对（第 16 轮的 HumanMessage + AIMessage 都已持久化）。
+    saved_state = fresh_graph.get_state(cfg)
+    saved_msgs = saved_state.values.get("messages", [])
+    human_msgs = [m for m in saved_msgs if m.type == "human"]
+    ai_msgs = [m for m in saved_msgs if m.type == "ai"]
+    # 第 16 轮的 HumanMessage 也已 push 进 state（intent_node 的行为）
+    assert len(human_msgs) == num_turns + 1, (
+        f"持久化 state 应含全部 {num_turns + 1} 条 HumanMessage，"
+        f"实际 {len(human_msgs)}"
+    )
+    assert len(ai_msgs) == num_turns + 1, (
+        f"持久化 state 应含全部 {num_turns + 1} 条 AIMessage，"
+        f"实际 {len(ai_msgs)}"
+    )
+    # 第 1 轮的 HumanMessage 仍应在持久化里（窗口不能误删底层数据）
+    assert any("pturn0" in m.content for m in human_msgs), (
+        "第 1 轮 pturn0 应仍在 SqliteSaver 持久化里，不被窗口删除"
+    )
