@@ -22,6 +22,7 @@ node 内部写法：接收 state，返回 dict（增量更新），由 LangGraph
 """
 
 import logging
+import time
 
 from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.checkpoint.sqlite import SqliteSaver
@@ -52,6 +53,8 @@ from backend.agent.tools import (
     save_expense,
     update_user_profile,
 )
+from backend.database import SessionLocal
+from backend.services.memory_service import get_user_memories
 
 
 # Task 18：短期记忆窗口上限。
@@ -128,6 +131,66 @@ def _dispatch_memory_extraction(user_id: str, user_input: str, reply: str) -> No
         logging.getLogger(__name__).warning(
             "chat_node.memory_extraction dispatch failed: %s", e
         )
+
+
+# ----------------------------------------------------------------------------
+# Task 22 后续 Step 1：Long-term Memory retrieval 接入 chat_node prompt
+# ----------------------------------------------------------------------------
+# 设计要点：
+#   - Task 22 已完成 "写"（extraction → user_memory）；本步骤完成 "读"（检索 → prompt）
+#   - 复用 memory_service.get_user_memories()，不写新 SQL
+#   - 限 MAX_LONG_TERM_MEMORY_INJECT 条避免 prompt 膨胀
+#   - DB 异常 → logger.warning + 返回空 section（fail-safe）
+#   - meta dict 对齐 Task 20 RAG meta 规范（hits / fetched / took_ms）
+#   - 与 RAG section 平级注入 system prompt，不嵌套
+MAX_LONG_TERM_MEMORY_INJECT = 10
+
+
+def _build_user_memory_section(user_id: str) -> tuple[str, dict]:
+    """从 user_memory 表读当前用户的长期记忆，构造成 prompt 段。
+
+    Args:
+        user_id: 用户 ID。
+
+    Returns:
+        (section, meta)：
+        - section: 拼好的 markdown 段；空字符串表示无内容（供调用方判断）
+        - meta: {"hits": int, "fetched": int, "took_ms": float}
+          对齐 Task 20 RAG meta 规范。
+    """
+    started = time.perf_counter()
+    meta: dict = {"hits": 0, "fetched": 0, "took_ms": 0.0}
+    if not user_id:
+        meta["took_ms"] = (time.perf_counter() - started) * 1000.0
+        return ("", meta)
+    try:
+        db = SessionLocal()
+        try:
+            mems = get_user_memories(db, user_id)
+        finally:
+            db.close()
+    except Exception as e:
+        # fail-safe：DB 读取异常 → warning + 空 section，不影响 chat_node
+        logging.getLogger(__name__).warning(
+            "chat_node.user_memory_retrieval failed user=%s err=%s", user_id, e
+        )
+        meta["took_ms"] = (time.perf_counter() - started) * 1000.0
+        return ("", meta)
+
+    meta["fetched"] = len(mems)
+    if not mems:
+        meta["took_ms"] = (time.perf_counter() - started) * 1000.0
+        return ("", meta)
+
+    picked = mems[:MAX_LONG_TERM_MEMORY_INJECT]
+    lines = [
+        f"- [{m.memory_type}] {m.key} = {m.value} (conf={m.confidence:.2f})"
+        for m in picked
+    ]
+    meta["hits"] = len(lines)
+    meta["took_ms"] = (time.perf_counter() - started) * 1000.0
+    section = "用户的长期记忆（稳定事实 / 偏好 / 习惯）：\n" + "\n".join(lines)
+    return (section, meta)
 
 
 # ----------------------------------------------------------------------------
@@ -258,12 +321,35 @@ def chat_node(state: AgentState) -> dict:
         rag_meta.get("max_sim", 0.0),
         rag_meta.get("took_ms", 0.0),
     )
-    # 2) 调 LLM
-    if rag_section:
+    # 1.5) Task 22 后续 Step 1：拼 user_memory 段落（与 RAG 平级）
+    memory_section, memory_meta = _build_user_memory_section(user_id)
+    logging.getLogger(__name__).info(
+        "chat_node.memory_meta user_id=%s hits=%d fetched=%d took_ms=%.2f",
+        user_id,
+        memory_meta["hits"],
+        memory_meta["fetched"],
+        memory_meta["took_ms"],
+    )
+    # 2) 拼 system prompt（RAG 与 长期记忆 平级组合；都没有则 fallback）
+    if rag_section and memory_section:
+        sys_text = (
+            "你是用户的个人记账助手，可以参考以下信息给出更贴切的回答。\n\n"
+            "【历史会话问答】（来自用户其他会话）\n"
+            f"{rag_section}\n\n"
+            "【用户长期记忆】（稳定事实 / 偏好 / 习惯）\n"
+            f"{memory_section}"
+        )
+    elif rag_section:
         sys_text = (
             "你是用户的个人记账助手，可以参考以下**历史会话问答**给出更贴切的回答"
             "（这些来自用户其他会话，不是当前上下文）：\n\n"
             f"{rag_section}"
+        )
+    elif memory_section:
+        sys_text = (
+            "你是用户的个人记账助手。\n\n"
+            "【用户长期记忆】（稳定事实 / 偏好 / 习惯）\n"
+            f"{memory_section}"
         )
     else:
         sys_text = "你是 AI Budget Assistant 的闲聊助手。回答简洁友好。"
