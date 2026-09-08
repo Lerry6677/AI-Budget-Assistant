@@ -20,3 +20,8 @@ venv/
 *.db
 *.sqlite
 *.sqlite3
+
+# Docker checkpoint volume 的宿主机目录（阶段 2-3）
+# 里面只应该出现运行时产生的 sqlite 及其 -wal/-journal 伴生文件，
+# 后者不匹配上面的 *.sqlite，所以整个目录直接忽略。
+data/

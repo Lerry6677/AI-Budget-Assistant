@@ -528,6 +528,9 @@ def _get_checkpointer():
     """获取 SqliteSaver 单例（第一版落本地文件，不引 Redis）。
 
     L3-2 默认 DB 文件：backend/checkpoints.sqlite。
+    可用环境变量 CHECKPOINT_DB_PATH 覆盖（Docker 下指向挂载出来的 volume 目录，
+    否则 checkpoint 只活在容器可写层，`docker compose down` 就全丢）。
+    未设置时行为与以前完全一致。
     测试可在 fixture 里 monkeypatch 替换成 MemorySaver。
 
     注意：SqliteSaver.from_conn_string() 是 @contextmanager，只能在 with 块内用。
@@ -540,10 +543,13 @@ def _get_checkpointer():
         import os
         import sqlite3
 
-        db_path = os.path.join(
+        db_path = os.getenv("CHECKPOINT_DB_PATH") or os.path.join(
             os.path.dirname(os.path.dirname(__file__)),  # backend/
             "checkpoints.sqlite",
         )
+        # 目标目录可能不存在（例如刚挂上的空 volume），先建出来。
+        # 用 abspath 是为了让「纯文件名」这种 db_path 也能得到可创建的父目录。
+        os.makedirs(os.path.dirname(os.path.abspath(db_path)), exist_ok=True)
         conn = sqlite3.connect(db_path, check_same_thread=False)
         _checkpointer = SqliteSaver(conn)
     return _checkpointer

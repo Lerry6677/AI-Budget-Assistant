@@ -1,34 +1,63 @@
+# ============================================================================
+# 版本策略（阶段 2-2）
+# ----------------------------------------------------------------------------
+# 只钉「被代码直接 import / 直接被运行链路使用」的包，版本一律取自当前
+# backend/venv 中已跑通 282 passed 的实际版本，不做任何升级。
+# 传递依赖（numpy / scipy / openai / tiktoken / aiosqlite / sqlite-vec 等）
+# 由 pip 自动解析，不在此列出，避免变成巨大的 freeze 文件。
+# ============================================================================
+
 # Web framework
-fastapi
-uvicorn
+fastapi==0.141.1
+uvicorn==0.52.1
 
 # Database
-sqlalchemy
-pymysql
-python-dotenv
+sqlalchemy==2.0.51
+pymysql==1.2.0            # DATABASE_URL=mysql+pymysql:// 的驱动，不被直接 import
+python-dotenv==1.2.2
 
 # Data validation
-pydantic
+pydantic==2.13.4
 
 # Auth
-pwdlib[argon2]
-PyJWT
+pwdlib[argon2]==0.3.1     # 与 services/auth_service.py 的 `from pwdlib import PasswordHash` 一致
+PyJWT==2.13.0
 
 # ============================================================================
 # LLM / Agent (LangChain 化)
 # ----------------------------------------------------------------------------
 # - langchain-core     : Runnable / Tool / Message 等基础抽象
 # - langchain-community: 第三方集成（DashScope / OpenAI / DeepSeek 等）
+# - langchain-openai   : agent/llm.py 顶层 `from langchain_openai import ChatOpenAI`
+#                        （LLM_PROVIDER=openai/deepseek 时的实际调用类）
 # - langgraph          : Agent 状态图（ReAct / 工具循环 / Checkpointer）
+# - langgraph-checkpoint-sqlite:
+#                        agent/graph.py 顶层 `from langgraph.checkpoint.sqlite
+#                        import SqliteSaver`。这是独立发行包，langgraph 不会带进来。
 # ============================================================================
-langchain
-langchain-core
-langchain-community
-langgraph
+langchain==1.3.18
+langchain-core==1.6.1
+langchain-community==0.4.2
+langchain-openai==1.6.0
+langgraph==1.2.11
+langgraph-checkpoint-sqlite==3.1.1
 
-# 中文友好的可选 LLM 客户端（阿里云百炼 / 通义千问）
-dashscope
+# RAG（agent/rag.py 顶层 `from sklearn.feature_extraction.text import TfidfVectorizer`
+#      / `from sklearn.metrics.pairwise import cosine_similarity`）
+scikit-learn==1.9.0
+
+# ----------------------------------------------------------------------------
+# dashscope（阿里云百炼 / 通义千问）—— 阶段 2-3 已从本文件移除
+# ----------------------------------------------------------------------------
+# 全项目只有一处引用：agent/llm.py 的 get_llm() 内部，且被
+# `if LLM_PROVIDER == "dashscope":` 守卫。当前 .env 是 LLM_PROVIDER=openai，
+# 项目 venv 从未安装过 dashscope，282 passed 的基线也从未覆盖它。
+# 它还会拖进 cryptography / rich / typer / websocket-client 等一批传递依赖，
+# 属于「声明了但从未验证过」的超集，与阶段 2-2 的可复现目标冲突，故删除。
+# 代码分支保留未动。若要切回 dashscope：
+#     pip install dashscope   # 并设 LLM_PROVIDER=dashscope
+# 然后把实测通过的版本钉回这里。
 
 # testing
-pytest
-httpx
+pytest==9.1.1
+httpx==0.28.1             # fastapi.testclient.TestClient 运行时需要，不被直接 import

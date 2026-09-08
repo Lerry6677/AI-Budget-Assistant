@@ -6,10 +6,38 @@ services:
     ports:
       - "8000:8000"
 
-    networks:
-      - docker_default
+    # ------------------------------------------------------------------------
+    # 环境变量
+    # ------------------------------------------------------------------------
+    # .env 被 .dockerignore 排除，不会进镜像；这里在运行时注入。
+    env_file:
+      - .env
 
+    # environment 的优先级高于 env_file，用来覆盖「容器内与宿主机语义不同」的变量。
+    # 注意：本文件里不出现任何明文口令。
+    environment:
+      # 容器内的 localhost 指向容器自身，连不到宿主机的 MySQL(3306)。
+      # 值取自根目录 .env 的 DATABASE_URL_DOCKER —— compose 会自动用根 .env
+      # 做变量插值，所以真实口令只存在于 .env 里。
+      # 原有的 DATABASE_URL（@localhost）保持不动，本地 Windows 开发不受影响。
+      DATABASE_URL: ${DATABASE_URL_DOCKER}
 
-networks:
-  docker_default:
-    external: true
+      # LangGraph checkpoint 落盘位置，对应下面的 ./data 挂载。
+      # 由 backend/agent/graph.py 的 _get_checkpointer() 读取。
+      CHECKPOINT_DB_PATH: /app/backend/data/checkpoints.sqlite
+
+    # ------------------------------------------------------------------------
+    # 持久化
+    # ------------------------------------------------------------------------
+    # checkpoint 不能只留在容器可写层，否则 `docker compose down` 之后所有对话
+    # 上下文清零，阶段 2-1 做的 thread_id 隔离也随之失效。
+    # 挂目录而不是挂单个文件：挂单文件时若宿主机该文件不存在，Docker 会创建一个
+    # **目录**顶上去，导致 sqlite3.connect() 报 "unable to open database file"。
+    volumes:
+      - ./data:/app/backend/data
+
+    restart: unless-stopped
+
+# 不再依赖 Dify 的 docker_default(external) 网络：
+# AGENT_ENABLED=true，Dify 已经不在 /chat 的请求链路上，backend 没必要加入它的网络。
+# 去掉 networks 段后 compose 会为本服务创建自己的默认网络。
