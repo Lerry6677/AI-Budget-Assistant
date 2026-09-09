@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import Chat from './pages/Chat';
 import Statistics from './pages/Statistics';
+import Expenses from './pages/Expenses';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -63,6 +64,15 @@ export default function App() {
             <MainLayout>
               <ProtectedRoute isAuthenticated={isAuthenticated} ready={ready} />
               {!ready ? <BootScreen /> : isAuthenticated ? <Statistics /> : null}
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/expenses"
+          element={
+            <MainLayout>
+              <ProtectedRoute isAuthenticated={isAuthenticated} ready={ready} />
+              {!ready ? <BootScreen /> : isAuthenticated ? <Expenses /> : null}
             </MainLayout>
           }
         />

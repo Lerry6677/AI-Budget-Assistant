@@ -1,41 +1,93 @@
-import { useCallback } from 'react';
-import AvatarBot from '../components/AvatarBot';
-import ChatMessage from '../components/ChatMessage';
-import ChatInput from '../components/ChatInput';
-import { useChat } from '../hooks/useChat';
+import { useCallback, useEffect, useState } from 'react';
+import { getMonthSummary, getRangeSummary, getSummary } from '../api/expense';
+import type { SummaryResponse } from '../types/expense';
+import { formatMoney, toLocalISO } from '../utils/format';
 
-// 统计页：完全独立的"会话空间"。
-// - 复用 useChat，但用 storageKey 启用"前端 only"模式：
-//   历史只缓存在浏览器 sessionStorage，不写入数据库。
-// - 关闭/刷新页面 / 切回 tab 不会丢失。
-// - thread_id 使用 "local:stats" 前缀：后端 agent 会据此跳过 chat_history 写库。
-const STORAGE_KEY = 'stats_chat_session_v1';
+// 统计页（V1.0 数据视图）：
+// - 全部指标来自后端现有聚合 API，前端不引入图表依赖（纯 CSS 条形图）。
+// - 本月概览  → GET /expense/month?year&month
+// - 今日支出  → GET /expense/query?start_time&end_time（今日 00:00 → 明日 00:00）
+// - 累计支出  → GET /summary
+// - 近 6 月趋势 → GET /expense/month × 6（并行）
+// - 本月分类占比 → /expense/month 返回的 category_summary（{分类: 金额} 字典）
 
-const PRESETS = [
-  '我这个月花了多少钱？',
-  '分析一下我最近的消费',
-  '本月各类别占比是多少？',
-  '我最近一周的消费趋势？',
-];
+const TREND_MONTHS = 6;
+
+interface TrendPoint {
+  label: string;
+  amount: number;
+}
+
+interface StatsData {
+  all: SummaryResponse;
+  month: SummaryResponse;
+  todayTotal: number;
+  todayCount: number;
+  trend: TrendPoint[];
+}
+
+async function loadStats(): Promise<StatsData> {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const todayStart = new Date(year, now.getMonth(), now.getDate());
+  const tomorrowStart = new Date(year, now.getMonth(), now.getDate() + 1);
+
+  // 近 TREND_MONTHS 个月（含本月），旧 → 新
+  const trendMonths: TrendPoint[] = [];
+  for (let i = TREND_MONTHS - 1; i >= 0; i--) {
+    const d = new Date(year, now.getMonth() - i, 1);
+    trendMonths.push({ label: `${d.getMonth() + 1}月`, amount: 0 });
+  }
+
+  const [all, monthSummary, today, ...trendResults] = await Promise.all([
+    getSummary(),
+    getMonthSummary(year, month),
+    getRangeSummary(toLocalISO(todayStart), toLocalISO(tomorrowStart)),
+    ...trendMonths.map((_, idx) => {
+      const d = new Date(year, now.getMonth() - (TREND_MONTHS - 1 - idx), 1);
+      return getMonthSummary(d.getFullYear(), d.getMonth() + 1);
+    }),
+  ]);
+
+  return {
+    all,
+    month: monthSummary,
+    todayTotal: today.total_amount,
+    todayCount: today.expense_count,
+    trend: trendMonths.map((p, idx) => ({ label: p.label, amount: trendResults[idx].total_amount })),
+  };
+}
 
 export default function Statistics() {
-  const {
-    messages,
-    loading,
-    historyLoading,
-    historyEmpty,
-    hasMessages,
-    send: sendViaHook,
-  } = useChat({ thread_id: 'local:stats', storageKey: STORAGE_KEY });
+  const [data, setData] = useState<StatsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const ask = useCallback(
-    async (text: string) => {
-      const q = text.trim();
-      if (!q || loading) return;
-      await sendViaHook(q);
-    },
-    [loading, sendViaHook],
-  );
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      setData(await loadStats());
+    } catch (err) {
+      setError(err instanceof Error && err.message ? err.message : '统计数据加载失败');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const now = new Date();
+  const monthLabel = `${now.getFullYear()} 年 ${now.getMonth() + 1} 月`;
+
+  // 本月分类：字典 → 数组，按金额降序
+  const catEntries: Array<[string, number]> = data
+    ? Object.entries(data.month.category_summary).sort((a, b) => b[1] - a[1])
+    : [];
+  const trendMax = data ? Math.max(...data.trend.map((p) => p.amount), 0) : 0;
 
   return (
     <div className="page page-stats">
@@ -43,63 +95,113 @@ export default function Statistics() {
         <span className="page-title">统计</span>
       </header>
 
-      {/* 三态渲染：拉历史 → 骨架；无历史 → 欢迎卡片；已有历史 → 聊天列表 */}
-      {!historyLoading && historyEmpty === true && !hasMessages && (
-        <div className="chat-welcome">
-          <AvatarBot size={56} />
-          <p className="welcome-hi">统计</p>
-          <p className="welcome-hint">
-            你可以直接问，也可以点下面的提示词快速开始
-          </p>
-          <div className="quick-row">
-            {PRESETS.map((q) => (
-              <button
-                key={q}
-                className="quick-chip"
-                type="button"
-                onClick={() => ask(q)}
-                disabled={loading}
-              >
-                {q}
-              </button>
-            ))}
+      <div className="stats-body">
+        {loading && (
+          <div className="stats-card">
+            <div className="stats-loading">
+              <span className="dots">
+                <i /> <i /> <i />
+              </span>
+              正在加载统计…
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="chat-scroll">
-        <div className="chat-list">
-          {historyLoading && hasMessages === false && historyEmpty === null && (
-            <div className="msg-row msg-ai">
-              <div className="msg-avatar">
-                <AvatarBot size={32} />
+        {!loading && error && (
+          <div className="stats-card">
+            <div className="stats-error">{error}</div>
+            <button className="retry-chip" type="button" onClick={() => void load()}>
+              重试
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && data && data.all.expense_count === 0 && data.todayCount === 0 && (
+          <div className="stats-card">
+            <div className="stats-empty">
+              还没有任何支出记录
+              <br />
+              去「AI 记账」页面对助手说「今天午饭花了 35 元」试试
+            </div>
+          </div>
+        )}
+
+        {!loading && !error && data && (data.all.expense_count > 0 || data.todayCount > 0) && (
+          <>
+            {/* 本月概览 */}
+            <div className="stats-card">
+              <div className="stats-card-head">
+                <span className="stats-card-title">{monthLabel}概览</span>
               </div>
-              <div className="msg-bubble bubble-ai">
-                <span className="dots big">
-                  <i /> <i /> <i />
-                </span>
+              <div className="stat-hero">
+                <span className="stat-hero-value">¥{formatMoney(data.month.total_amount)}</span>
+                <span className="stat-hero-label">本月支出 · {data.month.expense_count} 笔</span>
+              </div>
+              <div className="stats-divider" />
+              <div className="stat-mini-row">
+                <div className="stat-mini">
+                  <span className="stat-mini-value">¥{formatMoney(data.todayTotal)}</span>
+                  <span className="stat-mini-label">今日 · {data.todayCount} 笔</span>
+                </div>
+                <div className="stat-mini">
+                  <span className="stat-mini-value">¥{formatMoney(data.all.total_amount)}</span>
+                  <span className="stat-mini-label">累计 · {data.all.expense_count} 笔</span>
+                </div>
               </div>
             </div>
-          )}
-          {messages.map((m) => (
-            <ChatMessage key={m.id} message={m} />
-          ))}
-          {loading && (
-            <div className="msg-row msg-ai">
-              <div className="msg-avatar">
-                <AvatarBot size={32} />
+
+            {/* 近 6 个月趋势（纯 CSS 柱状图） */}
+            <div className="stats-card">
+              <div className="stats-card-head">
+                <span className="stats-card-title">近 {TREND_MONTHS} 个月趋势</span>
               </div>
-              <div className="msg-bubble bubble-ai">
-                <span className="dots big">
-                  <i /> <i /> <i />
-                </span>
+              <div className="trend-chart">
+                {data.trend.map((p) => (
+                  <div className="trend-col" key={p.label}>
+                    <span className="trend-value">{p.amount > 0 ? formatMoney(p.amount) : ''}</span>
+                    <div
+                      className="trend-bar"
+                      style={{ height: `${trendMax > 0 ? Math.round((p.amount / trendMax) * 100) : 0}%` }}
+                    />
+                    <span className="trend-label">{p.label}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          )}
-        </div>
+
+            {/* 本月分类占比（横向条形） */}
+            <div className="stats-card">
+              <div className="stats-card-head">
+                <span className="stats-card-title">本月分类支出</span>
+              </div>
+              {catEntries.length === 0 ? (
+                <div className="stats-empty">本月还没有分类支出</div>
+              ) : (
+                catEntries.map(([cat, amount]) => (
+                  <div className="cat-row" key={cat}>
+                    <span className="cat-name">{cat}</span>
+                    <div className="cat-bar-wrap">
+                      <div
+                        className="cat-bar"
+                        style={{
+                          width: `${data.month.total_amount > 0 ? Math.round((amount / data.month.total_amount) * 100) : 0}%`,
+                        }}
+                      />
+                    </div>
+                    <span className="cat-amount">
+                      ¥{formatMoney(amount)} ·{' '}
+                      {data.month.total_amount > 0
+                        ? Math.round((amount / data.month.total_amount) * 100)
+                        : 0}
+                      %
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
       </div>
-
-      <ChatInput onSend={ask} loading={loading} />
     </div>
   );
 }

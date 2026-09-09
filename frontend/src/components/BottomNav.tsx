@@ -19,6 +19,12 @@ const ICON_STATS = (
     <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
   </svg>
 );
+const ICON_EXPENSES = (
+  <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+    <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    <path d="M9 8h6M9 12h6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+  </svg>
+);
 const ICON_ME = (
   <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
     <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.6" />
@@ -29,6 +35,7 @@ const ICON_ME = (
 const ITEMS: Item[] = [
   { path: '/chat', label: 'AI 记账', icon: ICON_AI },
   { path: '/stats', label: '统计', icon: ICON_STATS },
+  { path: '/expenses', label: '账单', icon: ICON_EXPENSES },
   { path: '/profile', label: '我的', icon: ICON_ME },
 ];
 

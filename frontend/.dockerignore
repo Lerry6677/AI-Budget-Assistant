@@ -1,0 +1,7 @@
+# 前端镜像构建上下文瘦身与防污染（阶段 3-3）
+# node_modules 必须排除：宿主 Windows 依赖进镜像会污染 npm ci 的干净安装
+node_modules
+dist
+.env
+.env.*
+*.tsbuildinfo

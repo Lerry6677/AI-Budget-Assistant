@@ -8,13 +8,6 @@ function nextId(): string {
   return `${Date.now()}-${messageId}`;
 }
 
-const WELCOME: ChatMessage = {
-  id: 'welcome',
-  role: 'ai',
-  content: '你好，今天想记录什么呢？\n试试告诉我你刚才花了什么，比如「今天午饭花了 35 元」。',
-  createdAt: Date.now(),
-};
-
 export interface UseChatOptions {
   /**
    * 会话空间标识，传入后端以隔离不同页面的对话历史/记忆。
