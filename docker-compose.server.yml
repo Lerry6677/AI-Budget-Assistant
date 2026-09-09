@@ -41,7 +41,11 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile        # 复用已通过 L0-L9 验收的后端镜像，不修改
+      dockerfile: Dockerfile        # 复用后端镜像；仅经 build arg 注入 PyPI 镜像，不改其生产逻辑
+      args:
+        # 服务器无法直连 files.pythonhosted.org（Fastly 限速/不可达，实测 40s 零字节），
+        # 构建时注入腾讯云内网 PyPI 镜像；Dockerfile 默认仍为 pypi.org，本地/其他环境不受影响。
+        PIP_INDEX_URL: https://mirrors.cloud.tencent.com/pypi/simple
     restart: unless-stopped
     env_file: .env                  # JWT / LLM 等由服务器 .env 提供
     environment:

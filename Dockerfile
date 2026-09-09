@@ -25,7 +25,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # 先只拷 requirements，让依赖层可以独立缓存（改代码不会触发重装依赖）
 COPY backend/requirements.txt ./backend/requirements.txt
 
-RUN pip install --no-cache-dir -r backend/requirements.txt
+# PyPI 索引可由构建参数覆盖：默认 pypi.org 保证本地/通用环境可复现；
+# 服务器（如腾讯云）构建时经 docker-compose.server.yml 注入内网 PyPI 镜像，
+# 规避 files.pythonhosted.org 直连不可达导致的 pip 下载失败。
+ARG PIP_INDEX_URL=https://pypi.org/simple
+RUN pip install --no-cache-dir -i "${PIP_INDEX_URL}" -r backend/requirements.txt
 
 # 再拷其余源码。实际进镜像的内容由根目录 .dockerignore 决定：
 # .env / venv / node_modules / *.sqlite / *.sql / .git 全部被排除。
